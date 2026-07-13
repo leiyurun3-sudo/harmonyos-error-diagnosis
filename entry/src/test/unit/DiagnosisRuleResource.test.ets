@@ -10,6 +10,7 @@ import {
 } from '../fixtures/StaticResourceFixtures';
 
 interface DiagnosisRuleResource {
+  schemaName: string;
   schemaVersion: number;
   resourceVersion: string;
   rules: Array<DiagnosisRule>;
@@ -29,6 +30,7 @@ export default function diagnosisRuleResourceTest() {
     const resource: DiagnosisRuleResource = diagnosisRuleResource;
 
     it('uses the documented schema and resource versions', 0, () => {
+      expect(resource.schemaName).assertEqual('diagnosis-rules');
       expect(resource.schemaVersion).assertEqual(STATIC_RESOURCE_SCHEMA_VERSION);
       expect(resource.resourceVersion).assertEqual(STATIC_RESOURCE_VERSION);
       expect(resource.rules.length >= 12).assertTrue();

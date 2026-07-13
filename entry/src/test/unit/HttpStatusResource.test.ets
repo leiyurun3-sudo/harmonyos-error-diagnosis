@@ -14,6 +14,7 @@ import {
 } from '../fixtures/StaticResourceFixtures';
 
 interface HttpStatusResource {
+  schemaName: string;
   schemaVersion: number;
   resourceVersion: string;
   entries: Array<HttpStatusEntry>;
@@ -33,6 +34,7 @@ export default function httpStatusResourceTest() {
     const resource: HttpStatusResource = httpStatusResource;
 
     it('uses the documented schema and resource versions', 0, () => {
+      expect(resource.schemaName).assertEqual('http-status');
       expect(resource.schemaVersion).assertEqual(STATIC_RESOURCE_SCHEMA_VERSION);
       expect(resource.resourceVersion).assertEqual(STATIC_RESOURCE_VERSION);
     });

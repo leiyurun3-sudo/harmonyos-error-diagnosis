@@ -1,4 +1,5 @@
 {
+  "schemaName": "diagnosis-rules",
   "schemaVersion": 1,
   "resourceVersion": "1.0.0",
   "rules": [

@@ -12,7 +12,9 @@ export enum LogMetadataKey {
   RECORD_COUNT = 'recordCount',
   TEXT_LENGTH_RANGE = 'textLengthRange',
   CAPABILITY_AVAILABLE = 'capabilityAvailable',
-  PAGE_NAME = 'pageName'
+  PAGE_NAME = 'pageName',
+  RESOURCE_NAME = 'resourceName',
+  STAGE = 'stage'
 }
 
 export type LogMetadataValue = string | number | boolean;
@@ -104,6 +106,8 @@ function isAllowedMetadata(item: LogMetadataItem): boolean {
     case LogMetadataKey.RULE_VERSION:
     case LogMetadataKey.TEXT_LENGTH_RANGE:
     case LogMetadataKey.PAGE_NAME:
+    case LogMetadataKey.RESOURCE_NAME:
+    case LogMetadataKey.STAGE:
       return typeof item.value === 'string' && item.value.trim().length > 0;
     case LogMetadataKey.RECORD_COUNT:
       return typeof item.value === 'number' && Number.isFinite(item.value) && item.value >= 0;

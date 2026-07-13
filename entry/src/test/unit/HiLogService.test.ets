@@ -50,6 +50,8 @@ export default function hiLogServiceTest() {
         { key: LogMetadataKey.PAGE_NAME, value: 'synthetic@example.invalid' },
         { key: LogMetadataKey.RULE_VERSION, value: '13800138000' },
         { key: LogMetadataKey.TEXT_LENGTH_RANGE, value: 'https://internal.invalid' },
+        { key: LogMetadataKey.RESOURCE_NAME, value: 'D:\\private\\resource.json' },
+        { key: LogMetadataKey.STAGE, value: 'parse' },
         { key: LogMetadataKey.PAGE_NAME, value: 'DiagnosisPage' }
       ];
       const record = createLogRecord(LogLevel.WARN, {
@@ -60,13 +62,14 @@ export default function hiLogServiceTest() {
       const serialized = JSON.stringify(record);
 
       expect(record !== undefined).assertTrue();
-      expect(record?.metadata.length).assertEqual(1);
+      expect(record?.metadata.length).assertEqual(2);
       expect(serialized.includes('SYNTHETIC_TOKEN_123')).assertFalse();
       expect(serialized.includes('SYNTHETIC_PASSWORD_456')).assertFalse();
       expect(serialized.includes('synthetic@example.invalid')).assertFalse();
       expect(serialized.includes('13800138000')).assertFalse();
       expect(serialized.includes('internal.invalid')).assertFalse();
       expect(serialized.includes('rawText')).assertFalse();
+      expect(serialized.includes('private')).assertFalse();
     });
 
     it('rejects empty identifiers and negative durations', 0, () => {
