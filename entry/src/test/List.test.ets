@@ -10,6 +10,7 @@ import operationStateTest from './unit/OperationState.test';
 import rawResourceStoreTest from './unit/RawResourceStore.test';
 import resultModelsTest from './unit/ResultModels.test';
 import settingsModelsTest from './unit/SettingsModels.test';
+import settingsRepositoryTest from './unit/SettingsRepository.test';
 import staticContentRepositoryTest from './unit/StaticContentRepository.test';
 import testFixtureTest from './unit/TestFixture.test';
 
@@ -26,6 +27,7 @@ export default function testsuite() {
   rawResourceStoreTest();
   resultModelsTest();
   settingsModelsTest();
+  settingsRepositoryTest();
   staticContentRepositoryTest();
   testFixtureTest();
 }
