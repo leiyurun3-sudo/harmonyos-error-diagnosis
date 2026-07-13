@@ -99,6 +99,94 @@
     {
       "name": "theme_session_only",
       "value": "主题仅在本次会话生效，保存失败后可重试"
+    },
+    {
+      "name": "common_async_idle",
+      "value": "等待开始"
+    },
+    {
+      "name": "common_async_idle_accessibility",
+      "value": "当前操作尚未开始"
+    },
+    {
+      "name": "common_async_loading",
+      "value": "正在加载"
+    },
+    {
+      "name": "common_async_loading_accessibility",
+      "value": "内容正在加载，请稍候"
+    },
+    {
+      "name": "common_async_loading_default",
+      "value": "正在处理，请稍候。"
+    },
+    {
+      "name": "common_async_success",
+      "value": "加载完成"
+    },
+    {
+      "name": "common_async_success_accessibility",
+      "value": "内容加载完成"
+    },
+    {
+      "name": "common_async_error",
+      "value": "加载失败"
+    },
+    {
+      "name": "common_async_error_accessibility",
+      "value": "内容加载失败"
+    },
+    {
+      "name": "common_async_error_default",
+      "value": "操作失败，请稍后重试。"
+    },
+    {
+      "name": "common_async_cancelled",
+      "value": "操作已取消"
+    },
+    {
+      "name": "common_async_cancelled_accessibility",
+      "value": "当前操作已经取消"
+    },
+    {
+      "name": "common_async_cancelled_default",
+      "value": "本次操作已取消，可以重新开始。"
+    },
+    {
+      "name": "common_action_retry",
+      "value": "重新加载"
+    },
+    {
+      "name": "common_action_retry_accessibility",
+      "value": "重新执行当前加载操作"
+    },
+    {
+      "name": "common_notice_info",
+      "value": "提示"
+    },
+    {
+      "name": "common_notice_warning",
+      "value": "警告"
+    },
+    {
+      "name": "common_notice_error",
+      "value": "错误"
+    },
+    {
+      "name": "common_notice_severity_accessibility",
+      "value": "错误提示严重程度"
+    },
+    {
+      "name": "common_notice_dismiss",
+      "value": "关闭提示"
+    },
+    {
+      "name": "common_notice_dismiss_accessibility",
+      "value": "关闭当前错误提示"
+    },
+    {
+      "name": "common_confirm_cancel_accessibility",
+      "value": "取消当前操作，不执行确认"
     }
   ]
 }

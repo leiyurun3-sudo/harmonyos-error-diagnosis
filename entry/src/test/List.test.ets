@@ -1,5 +1,6 @@
 import appLimitsTest from './unit/AppLimits.test';
 import appStateStoreTest from './unit/AppStateStore.test';
+import commonComponentModelsTest from './unit/CommonComponentModels.test';
 import appRouterTest from './unit/AppRouter.test';
 import diagnosisModelsTest from './unit/DiagnosisModels.test';
 import diagnosisRuleResourceLoaderTest from './unit/DiagnosisRuleResourceLoader.test';
@@ -26,6 +27,7 @@ import testFixtureTest from './unit/TestFixture.test';
 export default function testsuite() {
   appLimitsTest();
   appStateStoreTest();
+  commonComponentModelsTest();
   appRouterTest();
   diagnosisModelsTest();
   diagnosisRuleResourceLoaderTest();

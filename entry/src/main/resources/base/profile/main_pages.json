@@ -1,5 +1,6 @@
 {
   "src": [
-    "pages/home/HomePage"
+    "pages/home/HomePage",
+    "pages/testing/CommonComponentsTestHost"
   ]
 }

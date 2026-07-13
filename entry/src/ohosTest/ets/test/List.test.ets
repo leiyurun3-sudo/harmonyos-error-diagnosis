@@ -2,6 +2,7 @@ import homePageSmokeTest from './pages/HomePageSmoke.test';
 import navigationFlowTest from './pages/NavigationFlow.test';
 import themeFlowTest from './pages/ThemeFlow.test';
 import themeStateTest from './pages/ThemeState.test';
+import commonComponentsFlowTest from './pages/CommonComponentsFlow.test';
 import databaseManagerInstrumentTest from './repository/DatabaseManager.test';
 import reportRepositoryInstrumentTest from './repository/ReportRepository.test';
 import reportStoreInstrumentTest from './repository/ReportStore.test';
@@ -11,6 +12,7 @@ export default function testsuite() {
   navigationFlowTest();
   themeFlowTest();
   themeStateTest();
+  commonComponentsFlowTest();
   databaseManagerInstrumentTest();
   reportRepositoryInstrumentTest();
   reportStoreInstrumentTest();
