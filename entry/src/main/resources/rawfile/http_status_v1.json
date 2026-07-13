@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "resourceVersion": "1.0.0",
+  "entries": [
+    {
+      "code": 200,
+      "name": "OK",
+      "category": "Success",
+      "description": "请求已成功完成；具体结果取决于所使用的HTTP方法。",
+      "causes": ["服务器已正常接收、理解并处理请求。"],
+      "steps": ["检查响应内容是否符合接口约定。", "继续按业务流程处理返回数据。"]
+    },
+    {
+      "code": 201,
+      "name": "Created",
+      "category": "Success",
+      "description": "请求已成功完成，并创建了新的资源。",
+      "causes": ["创建资源的请求已被服务器成功处理。"],
+      "steps": ["检查响应或Location信息以确认新资源标识。", "按接口约定查询或继续处理新资源。"]
+    },
+    {
+      "code": 204,
+      "name": "No Content",
+      "category": "Success",
+      "description": "请求已成功完成，响应不包含消息内容。",
+      "causes": ["操作成功，但接口设计为不返回响应正文。"],
+      "steps": ["不要把空响应正文误判为JSON解析失败。", "根据状态码和接口文档更新本地状态。"]
+    },
+    {
+      "code": 400,
+      "name": "Bad Request",
+      "category": "Client Error",
+      "description": "服务器无法或不愿处理当前请求，通常需要先修正请求。",
+      "causes": ["请求语法、参数、消息格式或路由信息不符合接口要求。"],
+      "steps": ["核对请求方法、参数名称、类型和内容格式。", "根据接口返回的校验信息修正请求后再试。"]
+    },
+    {
+      "code": 401,
+      "name": "Unauthorized",
+      "category": "Client Error",
+      "description": "请求缺少目标资源要求的有效认证信息。",
+      "causes": ["认证信息缺失、失效或格式不符合服务端要求。"],
+      "steps": ["核对接口要求的认证方式和请求头格式。", "更新有效认证信息后重试，且不要记录敏感凭据。"]
+    },
+    {
+      "code": 403,
+      "name": "Forbidden",
+      "category": "Client Error",
+      "description": "服务器理解请求，但拒绝执行该操作。",
+      "causes": ["当前身份缺少资源权限，或服务端策略禁止访问。"],
+      "steps": ["确认当前账号、角色和资源范围是否具有权限。", "核对服务端访问策略，必要时由管理员授权。"]
+    },
+    {
+      "code": 404,
+      "name": "Not Found",
+      "category": "Client Error",
+      "description": "服务器未找到与请求目标匹配的资源。",
+      "causes": ["请求路径或资源标识错误，或资源当前不存在。"],
+      "steps": ["核对接口路径、资源标识、版本和运行环境。", "确认资源已经创建且没有被删除。"]
+    },
+    {
+      "code": 408,
+      "name": "Request Timeout",
+      "category": "Client Error",
+      "description": "服务器在等待完成请求时超过了允许时间。",
+      "causes": ["客户端发送请求过慢、连接中断或网络不稳定。"],
+      "steps": ["检查网络连接和客户端发送过程。", "确认操作可安全重试后，使用有限次数重试。"]
+    },
+    {
+      "code": 409,
+      "name": "Conflict",
+      "category": "Client Error",
+      "description": "请求与目标资源当前状态发生冲突。",
+      "causes": ["资源版本、唯一约束或并发修改与当前请求不一致。"],
+      "steps": ["重新获取资源最新状态和版本信息。", "解决冲突后使用更新后的条件重新提交。"]
+    },
+    {
+      "code": 429,
+      "name": "Too Many Requests",
+      "category": "Client Error",
+      "description": "客户端在一定时间内发送了过多请求，触发了服务端限流。",
+      "causes": ["请求频率或数量超过服务端允许的额度。"],
+      "steps": ["读取并遵守服务端提供的等待或配额信息。", "降低请求频率，使用退避和有限重试。"]
+    },
+    {
+      "code": 500,
+      "name": "Internal Server Error",
+      "category": "Server Error",
+      "description": "服务器遇到未预期情况，无法完成请求。",
+      "causes": ["服务端处理发生异常，且没有更具体的5xx状态可用。"],
+      "steps": ["记录发生时间和脱敏后的请求标识。", "检查服务端日志与依赖状态，持续失败时联系维护方。"]
+    },
+    {
+      "code": 502,
+      "name": "Bad Gateway",
+      "category": "Server Error",
+      "description": "网关或代理从上游服务器收到了无效响应。",
+      "causes": ["上游服务不可用、协议异常或返回了网关无法处理的响应。"],
+      "steps": ["检查网关与上游服务的连通性和健康状态。", "核对代理配置以及上游响应格式。"]
+    },
+    {
+      "code": 503,
+      "name": "Service Unavailable",
+      "category": "Server Error",
+      "description": "服务器当前无法处理请求，通常属于临时状态。",
+      "causes": ["服务正在维护、过载或依赖暂时不可用。"],
+      "steps": ["检查服务健康状态和维护公告。", "遵守Retry-After信息，并使用有限次数重试。"]
+    },
+    {
+      "code": 504,
+      "name": "Gateway Timeout",
+      "category": "Server Error",
+      "description": "网关或代理等待上游服务器响应时超时。",
+      "causes": ["上游服务响应过慢、不可达或网关超时设置不合适。"],
+      "steps": ["检查上游服务耗时、连通性和网关超时配置。", "确认操作可安全重试后再进行有限次数重试。"]
+    }
+  ]
+}

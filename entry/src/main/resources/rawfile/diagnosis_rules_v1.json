@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 1,
+  "resourceVersion": "1.0.0",
+  "rules": [
+    {
+      "ruleId": "json_parse_error",
+      "errorType": "JSON解析错误",
+      "keywords": ["JSON.parse", "Unexpected token", "JSON syntax error"],
+      "patterns": ["SyntaxError:\\s*Unexpected token", "JSON\\.parse"],
+      "priority": 100,
+      "summaryTemplate": "JSON格式或响应内容可能不符合标准JSON语法。",
+      "causes": ["JSON文本存在缺失或多余的分隔符、引号或括号。", "接口返回了空内容、HTML或其他非JSON文本。"],
+      "steps": ["确认输入内容是完整的标准JSON，而不是JSON5、YAML或页面文本。", "从错误位置附近检查引号、逗号、冒号和括号是否成对。", "在JSON验证工具中重新验证，修正后再执行原操作。"],
+      "riskNotice": "不要直接执行或信任待验证内容中的代码片段。",
+      "version": "1.0.0"
+    },
+    {
+      "ruleId": "http_401_authentication",
+      "errorType": "HTTP认证错误",
+      "keywords": ["401", "Unauthorized"],
+      "patterns": ["\\b401\\b", "\\bUnauthorized\\b"],
+      "priority": 95,
+      "summaryTemplate": "服务器要求有效认证信息，当前请求尚未通过身份验证。",
+      "causes": ["请求未携带服务端要求的认证信息。", "认证信息已失效、格式不正确或不适用于当前资源。"],
+      "steps": ["核对接口文档要求的认证方式和请求头格式。", "确认认证信息仍有效且属于当前环境。", "更新认证信息后重新请求，并避免在日志中输出凭据。"],
+      "riskNotice": "认证信息属于敏感数据，不应复制到公开日志或报告。",
+      "version": "1.0.0"
+    },
+    {
+      "ruleId": "http_403_authorization",
+      "errorType": "HTTP权限错误",
+      "keywords": ["403", "Forbidden"],
+      "patterns": ["\\b403\\b", "\\bForbidden\\b"],
+      "priority": 94,
+      "summaryTemplate": "服务器理解请求，但当前身份没有执行该操作的权限。",
+      "causes": ["当前账号或角色缺少资源访问权限。", "服务端策略、资源范围或环境限制拒绝了请求。"],
+      "steps": ["确认当前身份已经完成认证并具有目标资源权限。", "核对账号角色、资源范围和服务端访问策略。", "由资源管理员授权后再试，不要通过重复请求绕过限制。"],
+      "riskNotice": "不要尝试绕过服务端权限控制。",
+      "version": "1.0.0"
+    },
+    {
+      "ruleId": "http_404_resource",
+      "errorType": "HTTP资源错误",
+      "keywords": ["404", "Not Found"],
+      "patterns": ["\\b404\\b", "\\bNot Found\\b"],
+      "priority": 93,
+      "summaryTemplate": "请求的资源未找到，地址、路径或资源状态可能不正确。",
+      "causes": ["请求路径、资源标识或接口版本填写错误。", "资源已被删除、尚未创建或当前环境没有该资源。"],
+      "steps": ["逐段核对域名之后的接口路径和资源标识。", "确认接口版本、请求方法和运行环境与文档一致。", "检查资源是否存在；若由服务端生成，确认创建流程已完成。"],
+      "version": "1.0.0"
+    },
+    {
+      "ruleId": "http_5xx_service",
+      "errorType": "HTTP服务错误",
+      "keywords": ["500", "502", "503", "Internal Server Error", "Bad Gateway", "Service Unavailable"],
+      "patterns": ["\\b(500|502|503)\\b", "\\b(Internal Server Error|Bad Gateway|Service Unavailable)\\b"],
+      "priority": 92,
+      "summaryTemplate": "服务端或网关未能正常完成请求。",
+      "causes": ["服务端处理出现未预期异常或暂时不可用。", "网关无法从上游服务取得有效响应。"],
+      "steps": ["记录状态码、发生时间和不含敏感内容的请求标识。", "检查服务端、网关和上游依赖的健康状态。", "确认操作可安全重试后再按有限次数重试，持续失败时联系服务维护方。"],
+      "riskNotice": "写操作重试前需要确认接口是否幂等。",
+      "version": "1.0.0"
+    },
+    {
+      "ruleId": "network_timeout",
+      "errorType": "网络超时",
+      "keywords": ["timeout", "timed out", "408", "Request Timeout"],
+      "patterns": ["\\btime(?:d)? out\\b", "\\btimeout\\b", "\\b408\\b"],
+      "priority": 90,
+      "summaryTemplate": "请求在规定时间内未完成，需要检查连接、超时配置和重试条件。",
+      "causes": ["网络连接不稳定或目标服务响应过慢。", "客户端超时阈值过短，或服务端处理被阻塞。"],
+      "steps": ["确认设备网络和目标服务当前可达。", "核对客户端、网关和服务端的超时设置。", "确认操作可重试后使用有限次数重试，并记录每次耗时。"],
+      "riskNotice": "不要无限重试；写操作重试前需要确认是否幂等。",
+      "version": "1.0.0"
+    },
+    {
+      "ruleId": "permission_denied",
+      "errorType": "权限错误",
+      "keywords": ["permission denied", "Permission denied", "not granted"],
+      "patterns": ["\\bpermission denied\\b", "\\bpermission (?:is )?not granted\\b"],
+      "priority": 85,
+      "summaryTemplate": "当前操作缺少必要的权限声明、用户授权或设备能力。",
+      "causes": ["应用配置中未声明所需权限或权限类型不匹配。", "用户拒绝授权，或当前设备不具备对应系统能力。"],
+      "steps": ["核对模块配置中的权限声明和使用场景说明。", "检查运行时授权结果以及用户是否选择拒绝。", "确认设备能力支持情况，并在不可用时启用已设计的降级流程。"],
+      "riskNotice": "只申请完成当前功能所必需的最小权限。",
+      "version": "1.0.0"
+    },
+    {
+      "ruleId": "null_reference",
+      "errorType": "空值错误",
+      "keywords": ["null", "undefined", "NullPointerException", "cannot read property"],
+      "patterns": ["\\bnull\\b", "\\bundefined\\b", "NullPointerException", "cannot read propert(?:y|ies)"],
+      "priority": 80,
+      "summaryTemplate": "代码使用了尚未初始化、已经释放或缺失的值。",
+      "causes": ["变量在使用前没有完成初始化。", "异步结果、可选字段或查询结果为空，但调用方未进行保护。"],
+      "steps": ["从首个空值访问位置向前追踪变量的赋值路径。", "为可空字段、异步失败和空查询结果增加明确分支。", "补充空值边界测试，确认错误状态不会继续进入后续处理。"],
+      "version": "1.0.0"
+    },
+    {
+      "ruleId": "arkts_compile",
+      "errorType": "ArkTS编译错误",
+      "keywords": ["ArkTS:ERROR", "ArkTS Compiler Error", "arkts-no-type-query", "10605060", "not assignable to type"],
+      "patterns": ["ArkTS(?: Compiler)? Error", "arkts-[a-z0-9-]+", "not assignable to type"],
+      "priority": 120,
+      "summaryTemplate": "ArkTS编译器检测到类型、语法或语言约束问题。",
+      "causes": ["代码使用了ArkTS不允许的TypeScript写法或语法上下文。", "变量、参数或返回值的声明类型与实际值不一致。"],
+      "steps": ["优先查看第一条ArkTS Compiler Error及其文件和行列位置。", "核对错误码、规则标识和相关类型声明，避免只处理末尾的BUILD FAILED包装信息。", "按ArkTS约束修改最小代码后重新编译，并补充对应边界测试。"],
+      "riskNotice": "不要为了消除编译错误而关闭严格类型检查或使用宽泛类型。",
+      "version": "1.0.0"
+    },
+    {
+      "ruleId": "hvigor_build",
+      "errorType": "Hvigor构建错误",
+      "keywords": ["hvigor ERROR", "assembleHap", "BUILD FAILED", "00303217", "DEVECO_SDK_HOME"],
+      "patterns": ["hvigor\\s+ERROR", "\\bassembleHap\\b", "\\bBUILD FAILED\\b", "\\b00303[0-9]{3}\\b"],
+      "priority": 110,
+      "summaryTemplate": "Hvigor构建环境、SDK配置或任务参数可能不正确。",
+      "causes": ["SDK根目录、组件版本或环境变量配置无效。", "构建任务、产品、模块或构建模式参数与工程配置不一致。"],
+      "steps": ["找到最早出现的Configuration Error或失败任务，不要只看末尾汇总。", "核对DEVECO_SDK_HOME是否指向SDK根目录，并确认所需组件已安装。", "使用与工程一致的模块、产品和构建模式重新执行Hvigor任务。"],
+      "version": "1.0.0"
+    },
+    {
+      "ruleId": "ohpm_dependency",
+      "errorType": "OHPM依赖错误",
+      "keywords": ["ohpm ERROR", "Fetch Pkg Info Failed", "NOTFOUND package", "Parse Dependency Failed", "00608005", "00616005"],
+      "patterns": ["ohpm\\s+ERROR", "\\b(00608005|00616005)\\b", "\\b(?:NOTFOUND package|Parse Dependency Failed|Fetch Pkg Info Failed)\\b"],
+      "priority": 118,
+      "summaryTemplate": "OHPM无法解析或获取工程声明的依赖。",
+      "causes": ["依赖名称、版本或包规格不符合OHPM格式。", "依赖声明、锁文件或仓库信息与当前工程不一致。"],
+      "steps": ["阅读最内层Caused by及其错误码，区分参数解析和依赖获取问题。", "核对oh-package.json5中的依赖名称、版本和依赖分组。", "修正声明后重新执行ohpm install，并确认锁文件与依赖目录同步。"],
+      "riskNotice": "不要在依赖配置或日志中保存私有仓库凭据。",
+      "version": "1.0.0"
+    },
+    {
+      "ruleId": "generic_unclassified",
+      "errorType": "通用错误",
+      "keywords": [],
+      "patterns": [],
+      "priority": 0,
+      "summaryTemplate": "当前错误未分类，尚不能确定具体根因。",
+      "causes": ["错误特征不在当前V1规则覆盖范围内。", "日志上下文不足，或主要错误被后续包装信息遮盖。"],
+      "steps": ["从日志中定位最早出现的明确错误、错误码和失败阶段。", "核对最近修改的代码、依赖、SDK和构建配置。", "保留脱敏后的最小复现信息，再查阅对应工具或接口的官方文档。"],
+      "riskNotice": "该结果仅提供通用排查方向，不代表已经确定根因。",
+      "version": "1.0.0"
+    }
+  ]
+}
