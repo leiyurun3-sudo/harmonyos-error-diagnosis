@@ -1,3 +1,4 @@
+import { uiMaterial } from '@kit.ArkUI';
 import { AsyncStatePanel } from '../../components/common/AsyncStatePanel';
 import { InlineErrorNotice } from '../../components/common/InlineErrorNotice';
 import { NoticeSeverity } from '../../components/common/CommonComponentModels';
@@ -9,11 +10,19 @@ import { RouteName } from '../../router/RouteNames';
 import { DiagnosisRouteParams } from '../../router/RouteModels';
 import { createDiagnosisViewModel } from '../../service/platform/AppRuntime';
 import { AppStateStore } from '../../store/AppStateStore';
-import { getThemePalette, ThemePalette } from '../../theme/ThemeModels';
+import { EffectiveTheme, getThemePalette, ThemePalette } from '../../theme/ThemeModels';
 import { DiagnosisViewModel } from '../../viewmodel/diagnosis/DiagnosisViewModel';
 
 @Component
 export struct DiagnosisPage {
+  private readonly lightFocusMaterial: uiMaterial.ImmersiveMaterial = new uiMaterial.ImmersiveMaterial({
+    style: uiMaterial.ImmersiveStyle.THIN,
+    materialColor: '#33FFFFFF',
+    colorInvert: false,
+    applyShadow: true,
+    interactive: true,
+    lightEffect: { color: Color.White }
+  });
   @Consume('appRouter')
   router: AppRouter;
   @Consume('appState')
@@ -123,7 +132,10 @@ export struct DiagnosisPage {
                 .fontWeight(FontWeight.Bold)
                 .fontColor(this.palette().primaryText)
                 .backgroundColor(this.palette().focusSurface)
-                .backgroundBlurStyle(BlurStyle.Thin)
+                .backgroundBlurStyle(this.appState.effectiveTheme === EffectiveTheme.DARK ?
+                  BlurStyle.Thin : BlurStyle.NONE)
+                .systemMaterial(this.appState.effectiveTheme === EffectiveTheme.LIGHT ?
+                  this.lightFocusMaterial : undefined)
                 .border({ width: 2, color: this.palette().focusBorder })
                 .borderRadius(14)
                 .shadow({

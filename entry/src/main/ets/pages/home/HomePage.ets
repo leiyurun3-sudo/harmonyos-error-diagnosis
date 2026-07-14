@@ -1,3 +1,4 @@
+import { uiMaterial } from '@kit.ArkUI';
 import { AsyncStatePanel } from '../../components/common/AsyncStatePanel';
 import { EmptyStateView } from '../../components/common/EmptyStateView';
 import { InlineErrorNotice } from '../../components/common/InlineErrorNotice';
@@ -17,6 +18,7 @@ import {
 } from '../../service/platform/AppRuntime';
 import { AppStateStore } from '../../store/AppStateStore';
 import {
+  EffectiveTheme,
   getThemePalette,
   ThemePalette,
   themeStatusText
@@ -34,6 +36,22 @@ import { ToolsPage } from '../tools/ToolsPage';
 @Component
 struct HomePage {
   private readonly pathStack: NavPathStack = new NavPathStack();
+  private readonly lightFocusMaterial: uiMaterial.ImmersiveMaterial = new uiMaterial.ImmersiveMaterial({
+    style: uiMaterial.ImmersiveStyle.THIN,
+    materialColor: '#33FFFFFF',
+    colorInvert: false,
+    applyShadow: true,
+    interactive: true,
+    lightEffect: { color: Color.White }
+  });
+  private readonly lightSecondaryMaterial: uiMaterial.ImmersiveMaterial = new uiMaterial.ImmersiveMaterial({
+    style: uiMaterial.ImmersiveStyle.THIN,
+    materialColor: '#33D7ECFF',
+    colorInvert: false,
+    applyShadow: true,
+    interactive: true,
+    lightEffect: { color: '#C8F1FF' }
+  });
   @Provide('appRouter')
   private appRouter: AppRouter = new AppRouter(new ArkNavigationStack(this.pathStack));
   @Provide('appState')
@@ -81,7 +99,10 @@ struct HomePage {
     .padding(18)
     .borderRadius(16)
     .backgroundColor(isFocus ? this.palette().focusSurface : this.palette().surfaceBackground)
-    .backgroundBlurStyle(isFocus ? BlurStyle.Thin : BlurStyle.NONE)
+    .backgroundBlurStyle(isFocus && this.appState.effectiveTheme === EffectiveTheme.DARK ?
+      BlurStyle.Thin : BlurStyle.NONE)
+    .systemMaterial(isFocus && this.appState.effectiveTheme === EffectiveTheme.LIGHT ?
+      this.lightFocusMaterial : undefined)
     .border({
       width: isFocus ? 2 : 0,
       color: isFocus ? this.palette().focusBorder : this.palette().surfaceBackground
@@ -172,7 +193,7 @@ struct HomePage {
             'home_image_diagnosis',
             $r('app.string.home_image_diagnosis'),
             $r('app.string.home_image_diagnosis_description'),
-            false,
+            true,
             (): void => { this.homeNavigation.openImageDiagnosis(); }
           )
           this.primaryEntry(
@@ -186,7 +207,23 @@ struct HomePage {
           Button($r('app.string.home_tools'))
             .width('100%')
             .constraintSize({ minHeight: 52 })
-            .fontColor(this.palette().accent)
+            .fontColor(this.appState.effectiveTheme === EffectiveTheme.LIGHT ?
+              this.palette().secondaryActionText : this.palette().accent)
+            .backgroundColor(this.appState.effectiveTheme === EffectiveTheme.LIGHT ?
+              this.palette().secondaryActionSurface : undefined)
+            .systemMaterial(this.appState.effectiveTheme === EffectiveTheme.LIGHT ?
+              this.lightSecondaryMaterial : undefined)
+            .border({
+              width: this.appState.effectiveTheme === EffectiveTheme.LIGHT ? 1 : 0,
+              color: this.palette().secondaryActionBorder
+            })
+            .borderRadius(this.appState.effectiveTheme === EffectiveTheme.LIGHT ? 14 : undefined)
+            .shadow({
+              radius: this.appState.effectiveTheme === EffectiveTheme.LIGHT ? 16 : 0,
+              color: this.palette().secondaryActionGlow,
+              offsetX: 0,
+              offsetY: this.appState.effectiveTheme === EffectiveTheme.LIGHT ? 4 : 0
+            })
             .onClick(() => this.homeNavigation.openTools())
 
           Column({ space: 12 }) {
@@ -198,7 +235,23 @@ struct HomePage {
               Blank()
               Button($r('app.string.home_view_all'))
                 .constraintSize({ minHeight: 44 })
-                .fontColor(this.palette().accent)
+                .fontColor(this.appState.effectiveTheme === EffectiveTheme.LIGHT ?
+                  this.palette().secondaryActionText : this.palette().accent)
+                .backgroundColor(this.appState.effectiveTheme === EffectiveTheme.LIGHT ?
+                  this.palette().secondaryActionSurface : undefined)
+                .systemMaterial(this.appState.effectiveTheme === EffectiveTheme.LIGHT ?
+                  this.lightSecondaryMaterial : undefined)
+                .border({
+                  width: this.appState.effectiveTheme === EffectiveTheme.LIGHT ? 1 : 0,
+                  color: this.palette().secondaryActionBorder
+                })
+                .borderRadius(this.appState.effectiveTheme === EffectiveTheme.LIGHT ? 14 : undefined)
+                .shadow({
+                  radius: this.appState.effectiveTheme === EffectiveTheme.LIGHT ? 12 : 0,
+                  color: this.palette().secondaryActionGlow,
+                  offsetX: 0,
+                  offsetY: this.appState.effectiveTheme === EffectiveTheme.LIGHT ? 3 : 0
+                })
                 .onClick(() => this.homeNavigation.openHistory())
             }
             .width('100%')
@@ -242,12 +295,63 @@ struct HomePage {
             Row({ space: 8 }) {
               Button($r('app.string.theme_verify_light'))
                 .constraintSize({ minHeight: 44 })
+                .fontColor(this.appState.effectiveTheme === EffectiveTheme.LIGHT ?
+                  this.palette().secondaryActionText : this.palette().accent)
+                .backgroundColor(this.appState.effectiveTheme === EffectiveTheme.LIGHT ?
+                  this.palette().secondaryActionSurface : undefined)
+                .systemMaterial(this.appState.effectiveTheme === EffectiveTheme.LIGHT ?
+                  this.lightSecondaryMaterial : undefined)
+                .border({
+                  width: this.appState.effectiveTheme === EffectiveTheme.LIGHT ? 1 : 0,
+                  color: this.palette().secondaryActionBorder
+                })
+                .borderRadius(this.appState.effectiveTheme === EffectiveTheme.LIGHT ? 14 : undefined)
+                .shadow({
+                  radius: this.appState.effectiveTheme === EffectiveTheme.LIGHT ? 10 : 0,
+                  color: this.palette().secondaryActionGlow,
+                  offsetX: 0,
+                  offsetY: this.appState.effectiveTheme === EffectiveTheme.LIGHT ? 2 : 0
+                })
                 .onClick(() => switchApplicationTheme(ThemeMode.LIGHT))
               Button($r('app.string.theme_verify_dark'))
                 .constraintSize({ minHeight: 44 })
+                .fontColor(this.appState.effectiveTheme === EffectiveTheme.LIGHT ?
+                  this.palette().secondaryActionText : this.palette().accent)
+                .backgroundColor(this.appState.effectiveTheme === EffectiveTheme.LIGHT ?
+                  this.palette().secondaryActionSurface : undefined)
+                .systemMaterial(this.appState.effectiveTheme === EffectiveTheme.LIGHT ?
+                  this.lightSecondaryMaterial : undefined)
+                .border({
+                  width: this.appState.effectiveTheme === EffectiveTheme.LIGHT ? 1 : 0,
+                  color: this.palette().secondaryActionBorder
+                })
+                .borderRadius(this.appState.effectiveTheme === EffectiveTheme.LIGHT ? 14 : undefined)
+                .shadow({
+                  radius: this.appState.effectiveTheme === EffectiveTheme.LIGHT ? 10 : 0,
+                  color: this.palette().secondaryActionGlow,
+                  offsetX: 0,
+                  offsetY: this.appState.effectiveTheme === EffectiveTheme.LIGHT ? 2 : 0
+                })
                 .onClick(() => switchApplicationTheme(ThemeMode.DARK))
               Button($r('app.string.theme_verify_system'))
                 .constraintSize({ minHeight: 44 })
+                .fontColor(this.appState.effectiveTheme === EffectiveTheme.LIGHT ?
+                  this.palette().secondaryActionText : this.palette().accent)
+                .backgroundColor(this.appState.effectiveTheme === EffectiveTheme.LIGHT ?
+                  this.palette().secondaryActionSurface : undefined)
+                .systemMaterial(this.appState.effectiveTheme === EffectiveTheme.LIGHT ?
+                  this.lightSecondaryMaterial : undefined)
+                .border({
+                  width: this.appState.effectiveTheme === EffectiveTheme.LIGHT ? 1 : 0,
+                  color: this.palette().secondaryActionBorder
+                })
+                .borderRadius(this.appState.effectiveTheme === EffectiveTheme.LIGHT ? 14 : undefined)
+                .shadow({
+                  radius: this.appState.effectiveTheme === EffectiveTheme.LIGHT ? 10 : 0,
+                  color: this.palette().secondaryActionGlow,
+                  offsetX: 0,
+                  offsetY: this.appState.effectiveTheme === EffectiveTheme.LIGHT ? 2 : 0
+                })
                 .onClick(() => switchApplicationTheme(ThemeMode.SYSTEM))
             }
             if (this.appState.isThemeSessionOnly) {

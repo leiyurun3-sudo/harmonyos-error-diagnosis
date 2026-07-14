@@ -55,6 +55,20 @@ export default function appStateStoreTest() {
       expect(light.focusGlow.length > 0).assertTrue();
       expect(dark.focusGlow.length > 0).assertTrue();
       expect(light.focusGlow === dark.focusGlow).assertFalse();
+      expect(light.pageBackground).assertEqual('#ECEEF2');
+      expect(light.navigationBackground).assertEqual('#ECEEF2');
+      expect(light.surfaceBackground).assertEqual('#F8F9FB');
+      expect(light.focusSurface).assertEqual('#66FFFFFF');
+      expect(light.focusBorder).assertEqual('#E6FFFFFF');
+      expect(light.focusGlow).assertEqual('#99FFFFFF');
+      expect(light.secondaryActionSurface).assertEqual('#66D7ECFF');
+      expect(light.secondaryActionBorder).assertEqual('#B3EAF6FF');
+      expect(light.secondaryActionGlow).assertEqual('#6658AFFF');
+      expect(light.secondaryActionText).assertEqual('#075985');
+      expect(dark.pageBackground).assertEqual('#101216');
+      expect(dark.focusSurface).assertEqual('#805179C8');
+      expect(dark.focusBorder).assertEqual('#F0B9DDFF');
+      expect(dark.focusGlow).assertEqual('#B35D8FFF');
     });
   });
 }

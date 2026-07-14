@@ -1,3 +1,4 @@
+import { uiMaterial } from '@kit.ArkUI';
 import { AsyncStatePanel } from '../../components/common/AsyncStatePanel';
 import { ReportSectionCard } from '../../components/report/ReportSectionCard';
 import { DiagnosisReport } from '../../model/DiagnosisModels';
@@ -7,12 +8,20 @@ import { RouteName } from '../../router/RouteNames';
 import { ReportRouteParams } from '../../router/RouteModels';
 import { createReportViewModel } from '../../service/platform/AppRuntime';
 import { AppStateStore } from '../../store/AppStateStore';
-import { getThemePalette, ThemePalette } from '../../theme/ThemeModels';
+import { EffectiveTheme, getThemePalette, ThemePalette } from '../../theme/ThemeModels';
 import { ReportSectionKind } from '../../viewmodel/report/ReportModels';
 import { ReportViewModel } from '../../viewmodel/report/ReportViewModel';
 
 @Component
 export struct ReportPage {
+  private readonly lightFocusMaterial: uiMaterial.ImmersiveMaterial = new uiMaterial.ImmersiveMaterial({
+    style: uiMaterial.ImmersiveStyle.THIN,
+    materialColor: '#33FFFFFF',
+    colorInvert: false,
+    applyShadow: true,
+    interactive: true,
+    lightEffect: { color: Color.White }
+  });
   @Consume('appRouter')
   router: AppRouter;
   @Consume('appState')
@@ -74,7 +83,10 @@ export struct ReportPage {
       .padding(16)
       .borderRadius(14)
       .backgroundColor(this.palette().focusSurface)
-      .backgroundBlurStyle(BlurStyle.Thin)
+      .backgroundBlurStyle(this.appState.effectiveTheme === EffectiveTheme.DARK ?
+        BlurStyle.Thin : BlurStyle.NONE)
+      .systemMaterial(this.appState.effectiveTheme === EffectiveTheme.LIGHT ?
+        this.lightFocusMaterial : undefined)
       .border({ width: 2, color: this.palette().focusBorder })
       .shadow({
         radius: 24,

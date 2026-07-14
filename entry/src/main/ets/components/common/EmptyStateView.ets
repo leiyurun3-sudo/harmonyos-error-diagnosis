@@ -1,5 +1,7 @@
+import { uiMaterial } from '@kit.ArkUI';
 import { AppStateStore } from '../../store/AppStateStore';
 import {
+  EffectiveTheme,
   getThemePalette,
   ThemePalette
 } from '../../theme/ThemeModels';
@@ -11,6 +13,14 @@ import {
 
 @Component
 export struct EmptyStateView {
+  private readonly lightSecondaryMaterial: uiMaterial.ImmersiveMaterial = new uiMaterial.ImmersiveMaterial({
+    style: uiMaterial.ImmersiveStyle.THIN,
+    materialColor: '#33D7ECFF',
+    colorInvert: false,
+    applyShadow: true,
+    interactive: true,
+    lightEffect: { color: '#C8F1FF' }
+  });
   @Consume('appState')
   appState: AppStateStore;
   @Prop
@@ -55,7 +65,23 @@ export struct EmptyStateView {
       if (this.presentation().showAction) {
         Button(this.presentation().actionLabel)
           .constraintSize({ minHeight: 44 })
-          .fontColor(this.palette().accent)
+          .fontColor(this.appState.effectiveTheme === EffectiveTheme.LIGHT ?
+            this.palette().secondaryActionText : this.palette().accent)
+          .backgroundColor(this.appState.effectiveTheme === EffectiveTheme.LIGHT ?
+            this.palette().secondaryActionSurface : undefined)
+          .systemMaterial(this.appState.effectiveTheme === EffectiveTheme.LIGHT ?
+            this.lightSecondaryMaterial : undefined)
+          .border({
+            width: this.appState.effectiveTheme === EffectiveTheme.LIGHT ? 1 : 0,
+            color: this.palette().secondaryActionBorder
+          })
+          .borderRadius(this.appState.effectiveTheme === EffectiveTheme.LIGHT ? 14 : undefined)
+          .shadow({
+            radius: this.appState.effectiveTheme === EffectiveTheme.LIGHT ? 12 : 0,
+            color: this.palette().secondaryActionGlow,
+            offsetX: 0,
+            offsetY: this.appState.effectiveTheme === EffectiveTheme.LIGHT ? 3 : 0
+          })
           .accessibilityText(this.presentation().actionLabel)
           .onClick(() => this.action())
       }
