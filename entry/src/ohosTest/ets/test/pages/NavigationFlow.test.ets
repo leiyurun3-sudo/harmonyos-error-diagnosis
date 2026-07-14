@@ -10,6 +10,18 @@ async function clickText(driver: Driver, text: string): Promise<void> {
   await driver.delayMs(UI_SETTLE_MS);
 }
 
+async function clickHome(driver: Driver, text: string): Promise<void> {
+  const scroll = await driver.findComponent(ON.id('home_scroll'));
+  const component = await scroll.scrollSearch(ON.text(text));
+  await component.click();
+  await driver.delayMs(UI_SETTLE_MS);
+}
+
+async function assertHome(driver: Driver): Promise<void> {
+  const scroll = await driver.findComponent(ON.id('home_scroll'));
+  await scroll.scrollSearch(ON.text('开发报错诊断助手'));
+}
+
 export default function navigationFlowTest() {
   describe('NavigationFlow', () => {
     it('loads all six pages and preserves explicit and system return paths', 0, async () => {
@@ -21,20 +33,20 @@ export default function navigationFlowTest() {
 
       const driver = Driver.create();
       await driver.delayMs(1000);
-      await driver.assertComponentExist(ON.text('首页'));
+      await assertHome(driver);
 
-      await clickText(driver, '进入诊断页');
+      await clickHome(driver, '文本诊断');
       await driver.assertComponentExist(ON.text('诊断页'));
       await clickText(driver, '返回首页');
-      await driver.assertComponentExist(ON.text('首页'));
+      await assertHome(driver);
 
-      await clickText(driver, '进入验证工具页');
+      await clickHome(driver, '打开验证工具');
       await driver.assertComponentExist(ON.text('验证工具页'));
       await driver.pressBack();
       await driver.delayMs(UI_SETTLE_MS);
-      await driver.assertComponentExist(ON.text('首页'));
+      await assertHome(driver);
 
-      await clickText(driver, '进入记录与设置页');
+      await clickHome(driver, '查看全部记录');
       await driver.assertComponentExist(ON.text('记录与设置页'));
       await clickText(driver, '查看隐私说明');
       await driver.assertComponentExist(ON.text('隐私说明页'));
@@ -49,7 +61,7 @@ export default function navigationFlowTest() {
 
       await driver.pressBack();
       await driver.delayMs(UI_SETTLE_MS);
-      await driver.assertComponentExist(ON.text('首页'));
+      await assertHome(driver);
     });
   });
 }

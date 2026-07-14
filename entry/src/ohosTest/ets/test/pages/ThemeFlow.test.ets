@@ -12,6 +12,18 @@ async function clickText(driver: Driver, text: string): Promise<void> {
   await driver.delayMs(UI_SETTLE_MS);
 }
 
+async function clickHome(driver: Driver, text: string): Promise<void> {
+  const scroll = await driver.findComponent(ON.id('home_scroll'));
+  const component = await scroll.scrollSearch(ON.text(text));
+  await component.click();
+  await driver.delayMs(UI_SETTLE_MS);
+}
+
+async function assertHome(driver: Driver): Promise<void> {
+  const scroll = await driver.findComponent(ON.id('home_scroll'));
+  await scroll.scrollSearch(ON.text('开发报错诊断助手'));
+}
+
 async function assertCurrentTheme(driver: Driver): Promise<void> {
   await driver.assertComponentExist(ON.text(themeStatusText(
     appStateStore.selectedThemeMode,
@@ -30,26 +42,26 @@ export default function themeFlowTest() {
       const driver = Driver.create();
       await driver.delayMs(1000);
 
-      await driver.assertComponentExist(ON.text('首页'));
+      await assertHome(driver);
       await assertCurrentTheme(driver);
 
-      await clickText(driver, '验证浅色主题');
+      await clickHome(driver, '验证浅色主题');
       await driver.assertComponentExist(ON.text('当前主题：LIGHT/LIGHT'));
-      await clickText(driver, '进入诊断页');
+      await clickHome(driver, '文本诊断');
       await driver.assertComponentExist(ON.text('诊断页'));
       await driver.assertComponentExist(ON.text('当前主题：LIGHT/LIGHT'));
       await driver.pressBack();
       await driver.delayMs(UI_SETTLE_MS);
 
-      await clickText(driver, '验证深色主题');
+      await clickHome(driver, '验证深色主题');
       await driver.assertComponentExist(ON.text('当前主题：DARK/DARK'));
-      await clickText(driver, '进入验证工具页');
+      await clickHome(driver, '打开验证工具');
       await driver.assertComponentExist(ON.text('验证工具页'));
       await driver.assertComponentExist(ON.text('当前主题：DARK/DARK'));
       await driver.pressBack();
       await driver.delayMs(UI_SETTLE_MS);
 
-      await clickText(driver, '进入记录与设置页');
+      await clickHome(driver, '查看全部记录');
       await driver.assertComponentExist(ON.text('记录与设置页'));
       await driver.assertComponentExist(ON.text('当前主题：DARK/DARK'));
       await clickText(driver, '查看隐私说明');
@@ -65,7 +77,7 @@ export default function themeFlowTest() {
       await driver.pressBack();
       await driver.delayMs(UI_SETTLE_MS);
 
-      await clickText(driver, '验证跟随系统');
+      await clickHome(driver, '验证跟随系统');
       await assertCurrentTheme(driver);
     });
   });

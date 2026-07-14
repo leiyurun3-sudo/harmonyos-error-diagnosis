@@ -156,7 +156,8 @@ export default function themeStateTest() {
 
       expect(appStateStore.loadState.status).assertEqual(OperationStatus.ERROR);
       expect(appStateStore.selectedThemeMode).assertEqual(ThemeMode.SYSTEM);
-      await driver.assertComponentExist(ON.text('首页'));
+      const scroll = await driver.findComponent(ON.id('home_scroll'));
+      await scroll.scrollSearch(ON.text('开发报错诊断助手'));
       await driver.assertComponentExist(ON.text('当前主题：SYSTEM/LIGHT'));
       await configureAppRuntime(ability.context);
     });
@@ -173,8 +174,9 @@ export default function themeStateTest() {
       expect(appStateStore.saveState.status).assertEqual(OperationStatus.ERROR);
       expect(appStateStore.isThemeSessionOnly).assertTrue();
       const driver = Driver.create();
-      await driver.assertComponentExist(ON.text('当前主题：DARK/DARK'));
-      await driver.assertComponentExist(ON.text('主题仅在本次会话生效，保存失败后可重试'));
+      const scroll = await driver.findComponent(ON.id('home_scroll'));
+      await scroll.scrollSearch(ON.text('当前主题：DARK/DARK'));
+      await scroll.scrollSearch(ON.text('主题仅在本次会话生效，保存失败后可重试'));
       await configureAppRuntime(ability.context);
     });
 

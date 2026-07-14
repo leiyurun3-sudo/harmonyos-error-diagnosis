@@ -17,6 +17,78 @@
       "value": "工程骨架已就绪"
     },
     {
+      "name": "home_product_description",
+      "value": "快速整理开发错误，生成清晰、可执行的本地诊断线索。"
+    },
+    {
+      "name": "home_local_badge",
+      "value": "本地诊断 · 离线可用"
+    },
+    {
+      "name": "home_local_badge_accessibility",
+      "value": "当前诊断方式为本地规则，核心功能离线可用"
+    },
+    {
+      "name": "home_image_diagnosis",
+      "value": "截图诊断"
+    },
+    {
+      "name": "home_image_diagnosis_description",
+      "value": "选择一张报错截图，进入图片输入流程"
+    },
+    {
+      "name": "home_text_diagnosis",
+      "value": "文本诊断"
+    },
+    {
+      "name": "home_text_diagnosis_description",
+      "value": "粘贴或输入错误信息，进入文本输入流程"
+    },
+    {
+      "name": "home_tools",
+      "value": "打开验证工具"
+    },
+    {
+      "name": "home_recent_title",
+      "value": "最近诊断记录"
+    },
+    {
+      "name": "home_recent_loading",
+      "value": "正在加载最近记录"
+    },
+    {
+      "name": "home_recent_error",
+      "value": "暂时无法读取最近记录，请稍后重试。"
+    },
+    {
+      "name": "home_recent_empty_title",
+      "value": "还没有诊断记录"
+    },
+    {
+      "name": "home_recent_empty_description",
+      "value": "完成诊断并主动保存后，最近记录会显示在这里。"
+    },
+    {
+      "name": "home_start_first",
+      "value": "开始第一次诊断"
+    },
+    {
+      "name": "home_view_all",
+      "value": "查看全部记录"
+    },
+    {
+      "name": "home_recent_open",
+      "value": "打开报告"
+    },
+    {
+      "name": "home_recent_open_accessibility",
+      "value": "点击打开这份历史诊断报告"
+    },
+    {
+      "name": "home_privacy_note",
+      "value": "报告仅在你主动保存后写入应用本地；首页不会申请图片权限。"
+    },
+    {
       "name": "route_home_title",
       "value": "首页"
     },

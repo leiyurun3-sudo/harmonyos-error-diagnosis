@@ -1,4 +1,5 @@
 import homePageSmokeTest from './pages/HomePageSmoke.test';
+import homePageFlowTest from './pages/HomePageFlow.test';
 import navigationFlowTest from './pages/NavigationFlow.test';
 import themeFlowTest from './pages/ThemeFlow.test';
 import themeStateTest from './pages/ThemeState.test';
@@ -9,6 +10,7 @@ import reportStoreInstrumentTest from './repository/ReportStore.test';
 
 export default function testsuite() {
   homePageSmokeTest();
+  homePageFlowTest();
   navigationFlowTest();
   themeFlowTest();
   themeStateTest();
