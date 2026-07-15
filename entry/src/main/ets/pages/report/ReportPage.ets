@@ -1,5 +1,6 @@
 import { uiMaterial } from '@kit.ArkUI';
 import { AsyncStatePanel } from '../../components/common/AsyncStatePanel';
+import { GlassActionButton } from '../../components/common/GlassActionButton';
 import { InlineErrorNotice } from '../../components/common/InlineErrorNotice';
 import { ReportSectionCard } from '../../components/report/ReportSectionCard';
 import { DiagnosisReport } from '../../model/DiagnosisModels';
@@ -162,17 +163,16 @@ export struct ReportPage {
       .backgroundColor(this.palette().surfaceBackground)
 
       Column({ space: 10 }) {
-        Button(this.viewModel?.saveOperation.status === OperationStatus.LOADING ?
-          $r('app.string.report_saving') : (this.viewModel?.isSaved ?
-          $r('app.string.report_saved') : $r('app.string.report_save')))
-          .id('report_save')
-          .width('100%')
-          .constraintSize({ minHeight: 48 })
-          .enabled(this.viewModel?.saveOperation.status !== OperationStatus.LOADING &&
-            !this.viewModel?.isSaved)
-          .onClick((): void => {
-            this.saveReport();
-          })
+        GlassActionButton({
+          label: this.viewModel?.saveOperation.status === OperationStatus.LOADING ?
+            $r('app.string.report_saving') : (this.viewModel?.isSaved ?
+            $r('app.string.report_saved') : $r('app.string.report_save')),
+          buttonId: 'report_save',
+          actionEnabled: this.viewModel?.saveOperation.status !== OperationStatus.LOADING &&
+            !this.viewModel?.isSaved,
+          loading: this.viewModel?.saveOperation.status === OperationStatus.LOADING,
+          onAction: (): void => { this.saveReport(); }
+        })
         if (this.viewModel?.saveOperation.status === OperationStatus.ERROR) {
           InlineErrorNotice({
             message: this.viewModel.saveError?.message ?? '保存失败，当前报告已保留，请重试。',
@@ -181,13 +181,11 @@ export struct ReportPage {
           })
         }
         if (this.viewModel?.hasEditableSession) {
-          Button($r('app.string.report_edit_text'))
-            .id('report_edit_text')
-            .width('100%')
-            .constraintSize({ minHeight: 48 })
-            .onClick((): void => {
-              this.editInput();
-            })
+          GlassActionButton({
+            label: $r('app.string.report_edit_text'),
+            buttonId: 'report_edit_text',
+            onAction: (): void => { this.editInput(); }
+          })
           Button($r('app.string.report_rediagnose'))
             .id('report_rediagnose')
             .width('100%')
