@@ -228,7 +228,7 @@ git commit -m "test: define glass action button states"
 
 **Interfaces:**
 - Consumes: `createGlassActionVisualState(...)`, `canDispatchGlassAction(...)`, `AppStateStore`.
-- Produces: `GlassActionButton` with `label`, `buttonId`, `enabled`, `loading`, and `onAction` inputs.
+- Produces: `GlassActionButton` with `label`, `buttonId`, `actionEnabled`, `loading`, and `onAction` inputs.
 
 - [ ] **Step 1: Create the thin ArkUI adapter**
 
@@ -261,7 +261,7 @@ export struct GlassActionButton {
   @Prop
   buttonId: string = '';
   @Prop
-  enabled: boolean = true;
+  actionEnabled: boolean = true;
   @Prop
   loading: boolean = false;
   @State
@@ -277,7 +277,7 @@ export struct GlassActionButton {
       this.palette(),
       this.appState.effectiveTheme,
       this.appState.visualEffectMode,
-      canDispatchGlassAction(this.enabled, this.loading),
+      canDispatchGlassAction(this.actionEnabled, this.loading),
       this.pressed
     );
   }
@@ -307,9 +307,9 @@ export struct GlassActionButton {
         duration: this.visualState().animationEnabled ? (this.pressed ? 100 : 180) : 0,
         curve: this.pressed ? Curve.EaseOut : Curve.Friction
       })
-      .enabled(canDispatchGlassAction(this.enabled, this.loading))
+      .enabled(canDispatchGlassAction(this.actionEnabled, this.loading))
       .onTouch((event: TouchEvent): void => {
-        if (!canDispatchGlassAction(this.enabled, this.loading)) {
+        if (!canDispatchGlassAction(this.actionEnabled, this.loading)) {
           this.pressed = false;
         } else if (event.type === TouchType.Down) {
           this.pressed = true;
@@ -318,7 +318,7 @@ export struct GlassActionButton {
         }
       })
       .onClick((): void => {
-        if (canDispatchGlassAction(this.enabled, this.loading)) {
+        if (canDispatchGlassAction(this.actionEnabled, this.loading)) {
           this.onAction();
         }
       })
@@ -338,7 +338,7 @@ In `DiagnosisPage.ets`:
 GlassActionButton({
   label: $r('app.string.diagnosis_start'),
   buttonId: 'diagnosis_start',
-  enabled: this.viewModel.diagnosisOperation.status !== OperationStatus.LOADING,
+  actionEnabled: this.viewModel.diagnosisOperation.status !== OperationStatus.LOADING,
   loading: this.viewModel.diagnosisOperation.status === OperationStatus.LOADING,
   onAction: (): void => { this.diagnose(); }
 })
@@ -392,7 +392,7 @@ GlassActionButton({
     $r('app.string.report_saving') : (this.viewModel?.isSaved ?
     $r('app.string.report_saved') : $r('app.string.report_save')),
   buttonId: 'report_save',
-  enabled: this.viewModel?.saveOperation.status !== OperationStatus.LOADING &&
+  actionEnabled: this.viewModel?.saveOperation.status !== OperationStatus.LOADING &&
     !this.viewModel?.isSaved,
   loading: this.viewModel?.saveOperation.status === OperationStatus.LOADING,
   onAction: (): void => { this.saveReport(); }

@@ -1,29 +1,20 @@
-import { uiMaterial } from '@kit.ArkUI';
 import { AsyncStatePanel } from '../../components/common/AsyncStatePanel';
+import { GlassActionButton } from '../../components/common/GlassActionButton';
 import { InlineErrorNotice } from '../../components/common/InlineErrorNotice';
 import { NoticeSeverity } from '../../components/common/CommonComponentModels';
 import { DiagnosisTextEditor } from '../../components/diagnosis/DiagnosisTextEditor';
 import { SourceType } from '../../model/DiagnosisModels';
 import { OperationStatus } from '../../model/ResultModels';
-import { VisualEffectMode } from '../../model/SettingsModels';
 import { AppRouter } from '../../router/AppRouter';
 import { RouteName } from '../../router/RouteNames';
 import { DiagnosisRouteParams } from '../../router/RouteModels';
 import { createDiagnosisViewModel } from '../../service/platform/AppRuntime';
 import { AppStateStore } from '../../store/AppStateStore';
-import { EffectiveTheme, getThemePalette, ThemePalette } from '../../theme/ThemeModels';
+import { getThemePalette, ThemePalette } from '../../theme/ThemeModels';
 import { DiagnosisViewModel } from '../../viewmodel/diagnosis/DiagnosisViewModel';
 
 @Component
 export struct DiagnosisPage {
-  private readonly lightFocusMaterial: uiMaterial.ImmersiveMaterial = new uiMaterial.ImmersiveMaterial({
-    style: uiMaterial.ImmersiveStyle.THIN,
-    materialColor: '#33FFFFFF',
-    colorInvert: false,
-    applyShadow: true,
-    interactive: true,
-    lightEffect: { color: Color.White }
-  });
   @Consume('appRouter')
   router: AppRouter;
   @Consume('appState')
@@ -35,8 +26,6 @@ export struct DiagnosisPage {
   };
   @State
   viewModel: DiagnosisViewModel | undefined = undefined;
-  @State
-  startButtonScale: number = 1;
 
   aboutToAppear(): void {
     if (this.viewModel === undefined) {
@@ -126,48 +115,13 @@ export struct DiagnosisPage {
                 .onClick((): void => {
                   this.viewModel?.useExample();
                 })
-              Button($r('app.string.diagnosis_start'))
-                .id('diagnosis_start')
-                .width('100%')
-                .constraintSize({ minHeight: 52 })
-                .fontWeight(FontWeight.Bold)
-                .fontColor(this.palette().primaryText)
-                .backgroundColor(this.palette().focusSurface)
-                .backgroundBlurStyle(this.appState.visualEffectMode !== VisualEffectMode.OFF &&
-                  this.appState.effectiveTheme === EffectiveTheme.DARK ?
-                  BlurStyle.Thin : BlurStyle.NONE)
-                .systemMaterial(this.appState.visualEffectMode !== VisualEffectMode.OFF &&
-                  this.appState.effectiveTheme === EffectiveTheme.LIGHT ?
-                  this.lightFocusMaterial : undefined)
-                .border({ width: 2, color: this.palette().focusBorder })
-                .borderRadius(14)
-                .shadow({
-                  radius: this.appState.visualEffectMode === VisualEffectMode.FULL ? 24 :
-                    (this.appState.visualEffectMode === VisualEffectMode.REDUCED ? 10 : 0),
-                  color: this.appState.visualEffectMode === VisualEffectMode.OFF ? '#00000000' :
-                    this.palette().focusGlow,
-                  offsetX: 0,
-                  offsetY: 6
-                })
-                .scale({
-                  x: this.appState.visualEffectMode === VisualEffectMode.OFF ? 1 : this.startButtonScale,
-                  y: this.appState.visualEffectMode === VisualEffectMode.OFF ? 1 : this.startButtonScale
-                })
-                .animation({
-                  duration: this.startButtonScale < 1 ? 100 : 180,
-                  curve: this.startButtonScale < 1 ? Curve.EaseOut : Curve.Friction
-                })
-                .enabled(this.viewModel.diagnosisOperation.status !== OperationStatus.LOADING)
-                .onTouch((event: TouchEvent): void => {
-                  if (event.type === TouchType.Down) {
-                    this.startButtonScale = 0.98;
-                  } else if (event.type === TouchType.Up || event.type === TouchType.Cancel) {
-                    this.startButtonScale = 1;
-                  }
-                })
-                .onClick((): void => {
-                  this.diagnose();
-                })
+              GlassActionButton({
+                label: $r('app.string.diagnosis_start'),
+                buttonId: 'diagnosis_start',
+                actionEnabled: this.viewModel.diagnosisOperation.status !== OperationStatus.LOADING,
+                loading: this.viewModel.diagnosisOperation.status === OperationStatus.LOADING,
+                onAction: (): void => { this.diagnose(); }
+              })
               Button(this.routeParams.origin === RouteName.HOME ?
                 $r('app.string.route_back_home') : $r('app.string.route_back_origin'))
                 .width('100%')
