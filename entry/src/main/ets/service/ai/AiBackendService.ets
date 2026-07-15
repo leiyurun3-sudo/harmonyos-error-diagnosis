@@ -137,8 +137,8 @@ export class AiBackendService {
       const response = await client.request(`${this.endpoint}${path}`, {
         method: http.RequestMethod.GET,
         header: headers,
-        connectTimeout: 1500,
-        readTimeout: 2500
+        connectTimeout: 5000,
+        readTimeout: 10000
       });
       return response.responseCode === 200;
     } catch (_) {
@@ -150,6 +150,7 @@ export class AiBackendService {
 
   private async call(path: string, prompt: string, agentMode: boolean): Promise<AiReply> {
     const client = http.createHttp();
+    let failureCode: number = 0;
     try {
       const compatible = this.apiKey.length > 0;
       const requestPath = compatible ? '/chat/completions' : path;
@@ -170,8 +171,8 @@ export class AiBackendService {
         method: http.RequestMethod.POST,
         header: headers,
         extraData: JSON.stringify(requestBody),
-        connectTimeout: 1800,
-        readTimeout: 5000
+        connectTimeout: 5000,
+        readTimeout: 30000
       });
       if (response.responseCode >= 200 && response.responseCode < 300) {
         const payload = typeof response.result === 'string' ? response.result : JSON.stringify(response.result);
@@ -191,10 +192,20 @@ export class AiBackendService {
           steps: parsed.steps ?? []
         };
       }
+      failureCode = response.responseCode;
     } catch (_) {
-      // API 不可达时必须保证课堂演示仍可继续。
+      failureCode = -1;
     } finally {
       client.destroy();
+    }
+    if (this.apiKey.length > 0) {
+      return {
+        text: failureCode > 0 ?
+          `真实在线模型请求失败，HTTP ${failureCode}。请检查 API Key、模型名、额度和服务地址。` :
+          '真实在线模型连接失败。请检查网络、API 地址和服务商状态。',
+        provider: 'ONLINE API · REQUEST FAILED',
+        steps: ['确认 Key 未过期且有可用额度', '确认模型 ID 与服务商一致', '重新检测连接后发送']
+      };
     }
     const fallback = this.localModel.infer(prompt, agentMode);
     return {

@@ -150,7 +150,8 @@ export struct ReportPage {
           .textOverflow({ overflow: TextOverflow.Ellipsis })
         Button(this.rawTextExpanded ? $r('app.string.report_collapse') : $r('app.string.report_expand'))
           .constraintSize({ minHeight: 44 })
-          .fontColor(this.palette().accent)
+          .fontColor('#FFFFFFFF')
+          .backgroundColor('#0A59F7')
           .onClick((): void => {
             this.rawTextExpanded = !this.rawTextExpanded;
           })
@@ -168,6 +169,8 @@ export struct ReportPage {
           .id('report_save')
           .width('100%')
           .constraintSize({ minHeight: 48 })
+          .fontColor(this.viewModel?.isSaved ? '#172033' : '#FFFFFFFF')
+          .backgroundColor(this.viewModel?.isSaved ? '#C7D7F2' : '#0A59F7')
           .enabled(this.viewModel?.saveOperation.status !== OperationStatus.LOADING &&
             !this.viewModel?.isSaved)
           .onClick((): void => {
@@ -185,6 +188,8 @@ export struct ReportPage {
             .id('report_edit_text')
             .width('100%')
             .constraintSize({ minHeight: 48 })
+            .fontColor('#FFFFFFFF')
+            .backgroundColor('#087F5B')
             .onClick((): void => {
               this.editInput();
             })
@@ -192,7 +197,8 @@ export struct ReportPage {
             .id('report_rediagnose')
             .width('100%')
             .constraintSize({ minHeight: 48 })
-            .fontColor(this.palette().accent)
+            .fontColor('#FFFFFFFF')
+            .backgroundColor('#3157A4')
             .onClick((): void => {
               this.viewModel?.rediagnose();
             })
@@ -200,7 +206,8 @@ export struct ReportPage {
         Button($r('app.string.route_back_origin'))
           .width('100%')
           .constraintSize({ minHeight: 48 })
-          .fontColor(this.palette().secondaryText)
+          .fontColor('#FFFFFFFF')
+          .backgroundColor('#0A59F7')
           .onClick((): void => {
             this.viewModel?.backToOrigin();
           })

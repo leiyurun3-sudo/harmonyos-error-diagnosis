@@ -81,6 +81,15 @@ export struct ToolsRootView {
     if (this.busy || this.prompt.trim().length === 0) {
       return;
     }
+    if (this.modelMode === AiModelMode.BACKEND_API && this.apiKey.trim().length === 0) {
+      this.provider = 'ONLINE API · NEED KEY';
+      this.answer = '请先填写真实模型的 API Key。未填写 Key 时不会伪装成在线模型，也不会返回本地固定回复。';
+      this.steps = ['选择 OpenAI 兼容服务', '填写 API 地址、API Key 和模型名', '检测连接后重新发送'];
+      return;
+    }
+    aiBackendService.setEndpoint(this.apiEndpoint);
+    aiBackendService.setApiKey(this.apiKey);
+    aiBackendService.setModel(this.apiModel);
     this.busy = true;
     this.answer = agentMode ? 'Agent 正在规划与调用 Skill…' : '模型正在分析…';
     const reply: AiReply = agentMode ?
@@ -90,6 +99,18 @@ export struct ToolsRootView {
     this.provider = reply.provider;
     this.steps = reply.steps;
     this.busy = false;
+  }
+
+  private selectOnlineApi(): void {
+    this.modelMode = AiModelMode.BACKEND_API;
+    if (this.apiEndpoint.startsWith('http://127.0.0.1')) {
+      this.apiEndpoint = 'https://api.groq.com/openai/v1';
+      this.apiModel = 'openai/gpt-oss-20b';
+    }
+    this.provider = 'ONLINE API · WAITING FOR KEY';
+    this.answer = '填写 API Key 后，发送内容会由所选真实在线模型生成。';
+    this.apiStatus = '等待填写 API Key 并检测真实模型连接';
+    this.steps = [];
   }
 
   private async checkApi(): Promise<void> {
@@ -245,17 +266,33 @@ export struct ToolsRootView {
     Column({ space: 13 }) {
       Row({ space: 8 }) {
         Button('免费端侧模型').layoutWeight(1).height(44)
+          .fontColor('#FFFFFFFF')
           .backgroundColor(this.modelMode === AiModelMode.LOCAL_FREE ? '#12A69A' : '#24364E')
-          .onClick(() => this.modelMode = AiModelMode.LOCAL_FREE)
+          .onClick(() => {
+            this.modelMode = AiModelMode.LOCAL_FREE;
+            this.provider = 'DevAssist Mini · Free Local Model';
+            this.answer = '当前为本地规则模型，适合离线诊断；如需通用问答，请选择在线 API 并填写 Key。';
+            this.steps = [];
+          })
         Button('在线 API').layoutWeight(1).height(44)
+          .fontColor('#FFFFFFFF')
           .backgroundColor(this.modelMode === AiModelMode.BACKEND_API ? '#5B8CFF' : '#24364E')
-          .onClick(() => this.modelMode = AiModelMode.BACKEND_API)
+          .onClick(() => this.selectOnlineApi())
       }.width('100%')
       if (this.modelMode === AiModelMode.BACKEND_API) {
+        TextInput({ text: this.apiEndpoint, placeholder: 'API 地址，例如 https://api.groq.com/openai/v1' })
+          .height(46).fontColor(this.palette().primaryText)
+          .onChange((value: string) => this.apiEndpoint = value)
         TextInput({ text: this.apiKey, placeholder: 'API Key：输入后调用真实在线模型' })
-          .height(46).onChange((value: string) => this.apiKey = value)
+          .height(46).fontColor(this.palette().primaryText)
+          .onChange((value: string) => this.apiKey = value)
         TextInput({ text: this.apiModel, placeholder: '模型名，例如 openai/gpt-oss-20b' })
-          .height(46).onChange((value: string) => this.apiModel = value)
+          .height(46).fontColor(this.palette().primaryText)
+          .onChange((value: string) => this.apiModel = value)
+        Button('检测真实模型连接').width('100%').height(42).fontColor('#FFFFFFFF')
+          .backgroundColor('#087F5B').onClick(() => this.checkApi())
+        Text(this.apiStatus).width('100%').fontSize(12)
+          .fontColor(this.apiStatus.includes('已连接') ? '#087F5B' : '#B42318')
         Text('兼容 OpenAI Chat Completions。Key 只保存在本次运行内，不写入本地文件。')
           .width('100%').fontSize(11).lineHeight(18).fontColor(this.palette().secondaryText)
       }
