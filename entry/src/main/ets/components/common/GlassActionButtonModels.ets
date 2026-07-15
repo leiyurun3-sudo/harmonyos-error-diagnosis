@@ -16,8 +16,23 @@ export interface GlassActionVisualState {
   animationEnabled: boolean;
 }
 
+export interface GlassActionInteractionState {
+  actionAvailable: boolean;
+  nativeEnabled: boolean;
+}
+
 export function canDispatchGlassAction(enabled: boolean, loading: boolean): boolean {
   return enabled && !loading;
+}
+
+export function createGlassActionInteractionState(
+  enabled: boolean,
+  loading: boolean
+): GlassActionInteractionState {
+  return {
+    actionAvailable: canDispatchGlassAction(enabled, loading),
+    nativeEnabled: true
+  };
 }
 
 export function createGlassActionVisualState(
@@ -43,7 +58,7 @@ export function createGlassActionVisualState(
     useLightMaterial: effectsEnabled && theme === EffectiveTheme.LIGHT,
     useDarkBlur: effectsEnabled && theme === EffectiveTheme.DARK,
     scale: effectsEnabled && pressed ? 0.98 : 1,
-    opacity: enabled ? 1 : 0.72,
+    opacity: 1,
     animationEnabled: effectsEnabled
   };
 }

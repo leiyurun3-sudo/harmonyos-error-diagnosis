@@ -106,15 +106,12 @@ export struct DiagnosisPage {
             }
 
             Column({ space: 10 }) {
-              Button($r('app.string.diagnosis_use_example'))
-                .id('diagnosis_use_example')
-                .width('100%')
-                .constraintSize({ minHeight: 48 })
-                .enabled(this.viewModel.diagnosisOperation.status !== OperationStatus.LOADING)
-                .fontColor(this.palette().accent)
-                .onClick((): void => {
-                  this.viewModel?.useExample();
-                })
+              GlassActionButton({
+                label: $r('app.string.diagnosis_use_example'),
+                buttonId: 'diagnosis_use_example',
+                actionEnabled: this.viewModel.diagnosisOperation.status !== OperationStatus.LOADING,
+                onAction: (): void => { this.viewModel?.useExample(); }
+              })
               GlassActionButton({
                 label: $r('app.string.diagnosis_start'),
                 buttonId: 'diagnosis_start',
@@ -122,14 +119,12 @@ export struct DiagnosisPage {
                 loading: this.viewModel.diagnosisOperation.status === OperationStatus.LOADING,
                 onAction: (): void => { this.diagnose(); }
               })
-              Button(this.routeParams.origin === RouteName.HOME ?
-                $r('app.string.route_back_home') : $r('app.string.route_back_origin'))
-                .width('100%')
-                .constraintSize({ minHeight: 48 })
-                .fontColor(this.palette().secondaryText)
-                .onClick((): void => {
-                  this.router.back();
-                })
+              GlassActionButton({
+                label: this.routeParams.origin === RouteName.HOME ?
+                  $r('app.string.route_back_home') : $r('app.string.route_back_origin'),
+                buttonId: 'diagnosis_back',
+                onAction: (): void => { this.router.back(); }
+              })
             }
             .width('100%')
           }

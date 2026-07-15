@@ -2,6 +2,7 @@ import { DIAGNOSIS_INPUT_MAX_CHARACTERS } from '../../constants/AppLimits';
 import { SourceType } from '../../model/DiagnosisModels';
 import { AppStateStore } from '../../store/AppStateStore';
 import { getThemePalette, ThemePalette } from '../../theme/ThemeModels';
+import { GlassActionButton } from '../common/GlassActionButton';
 import { InlineErrorNotice } from '../common/InlineErrorNotice';
 
 export type DiagnosisTextChanged = (text: string) => void;
@@ -70,13 +71,13 @@ export struct DiagnosisTextEditor {
           .layoutWeight(1)
           .fontSize(13 * this.appState.contentFontMultiplier)
           .fontColor(this.palette().secondaryText)
-        Button($r('app.string.diagnosis_clear'))
-          .enabled(!this.readOnly && this.text.length > 0)
-          .constraintSize({ minHeight: 44 })
-          .fontColor(this.palette().accent)
-          .onClick((): void => {
-            this.onClear?.();
-          })
+        GlassActionButton({
+          label: $r('app.string.diagnosis_clear'),
+          buttonId: 'diagnosis_clear',
+          actionEnabled: !this.readOnly && this.text.length > 0,
+          compact: true,
+          onAction: (): void => { this.onClear?.(); }
+        })
       }
       .width('100%')
 

@@ -1,7 +1,9 @@
 import { describe, expect, it } from '@ohos/hypium';
 import {
   canDispatchGlassAction,
-  createGlassActionVisualState
+  createGlassActionInteractionState,
+  createGlassActionVisualState,
+  GlassActionInteractionState
 } from '../../main/ets/components/common/GlassActionButtonModels';
 import { AccentTheme, VisualEffectMode } from '../../main/ets/model/SettingsModels';
 import { EffectiveTheme, getThemePalette } from '../../main/ets/theme/ThemeModels';
@@ -55,7 +57,7 @@ export default function glassActionButtonModelsTest() {
       );
 
       expect(disabled.foregroundColor).assertEqual(palette.primaryText);
-      expect(disabled.opacity).assertEqual(0.72);
+      expect(disabled.opacity).assertEqual(1);
       expect(disabled.shadowRadius).assertEqual(0);
       expect(disabled.useLightMaterial).assertFalse();
     });
@@ -74,6 +76,16 @@ export default function glassActionButtonModelsTest() {
       expect(canDispatchGlassAction(true, false)).assertTrue();
       expect(canDispatchGlassAction(false, false)).assertFalse();
       expect(canDispatchGlassAction(true, true)).assertFalse();
+    });
+
+    it('keeps native rendering enabled while blocking unavailable actions', 0, () => {
+      const disabled: GlassActionInteractionState = createGlassActionInteractionState(false, false);
+      const loading: GlassActionInteractionState = createGlassActionInteractionState(true, true);
+
+      expect(disabled.nativeEnabled).assertTrue();
+      expect(disabled.actionAvailable).assertFalse();
+      expect(loading.nativeEnabled).assertTrue();
+      expect(loading.actionAvailable).assertFalse();
     });
   });
 }

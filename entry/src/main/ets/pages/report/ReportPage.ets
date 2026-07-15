@@ -149,12 +149,12 @@ export struct ReportPage {
           .fontColor(this.palette().secondaryText)
           .maxLines(this.rawTextExpanded ? 20 : 4)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
-        Button(this.rawTextExpanded ? $r('app.string.report_collapse') : $r('app.string.report_expand'))
-          .constraintSize({ minHeight: 44 })
-          .fontColor(this.palette().accent)
-          .onClick((): void => {
-            this.rawTextExpanded = !this.rawTextExpanded;
-          })
+        GlassActionButton({
+          label: this.rawTextExpanded ? $r('app.string.report_collapse') : $r('app.string.report_expand'),
+          buttonId: 'report_raw_toggle',
+          compact: true,
+          onAction: (): void => { this.rawTextExpanded = !this.rawTextExpanded; }
+        })
       }
       .width('100%')
       .alignItems(HorizontalAlign.Start)
@@ -186,22 +186,17 @@ export struct ReportPage {
             buttonId: 'report_edit_text',
             onAction: (): void => { this.editInput(); }
           })
-          Button($r('app.string.report_rediagnose'))
-            .id('report_rediagnose')
-            .width('100%')
-            .constraintSize({ minHeight: 48 })
-            .fontColor(this.palette().accent)
-            .onClick((): void => {
-              this.viewModel?.rediagnose();
-            })
-        }
-        Button($r('app.string.route_back_origin'))
-          .width('100%')
-          .constraintSize({ minHeight: 48 })
-          .fontColor(this.palette().secondaryText)
-          .onClick((): void => {
-            this.viewModel?.backToOrigin();
+          GlassActionButton({
+            label: $r('app.string.report_rediagnose'),
+            buttonId: 'report_rediagnose',
+            onAction: (): void => { this.viewModel?.rediagnose(); }
           })
+        }
+        GlassActionButton({
+          label: $r('app.string.route_back_origin'),
+          buttonId: 'report_back',
+          onAction: (): void => { this.viewModel?.backToOrigin(); }
+        })
       }
       .width('100%')
     }
@@ -236,13 +231,12 @@ export struct ReportPage {
               onRetry: this.routeParams.reportId === undefined ? undefined :
                 (): void => { this.loadHistoricalReport(); }
             })
-            Button(this.routeParams.origin === RouteName.HISTORY_SETTINGS ?
-              $r('app.string.route_back_history_settings') : $r('app.string.route_back_origin'))
-              .width('100%')
-              .constraintSize({ minHeight: 48 })
-              .onClick((): void => {
-                this.viewModel?.backToOrigin();
-              })
+            GlassActionButton({
+              label: this.routeParams.origin === RouteName.HISTORY_SETTINGS ?
+                $r('app.string.route_back_history_settings') : $r('app.string.route_back_origin'),
+              buttonId: 'report_error_back',
+              onAction: (): void => { this.viewModel?.backToOrigin(); }
+            })
           }
         }
         .width('100%')
