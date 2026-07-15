@@ -83,6 +83,18 @@ export default function reportRepositoryTest() {
         .assertEqual(ErrorCode.REPORT_NOT_FOUND);
     });
 
+    it('reads a saved report after rebuilding the repository over the same store', 0, async () => {
+      const store = new FakeReportStore();
+      await repository(store).save(createReportFixture('synthetic-rebuilt-repository'));
+
+      const rebuilt = repository(store);
+      const restored = await rebuilt.getById('synthetic-rebuilt-repository');
+
+      expect(restored.success).assertTrue();
+      expect(restored.data?.id).assertEqual('synthetic-rebuilt-repository');
+      expect(restored.data?.savedAt).assertEqual(SAVED_AT);
+    });
+
     it('validates list pagination and returns the requested descending page', 0, async () => {
       const store = new FakeReportStore();
       seedReports(store, 4);

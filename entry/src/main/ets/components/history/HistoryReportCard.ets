@@ -13,6 +13,8 @@ export struct HistoryReportCard {
   item: HomeReportItem;
   @Prop
   compact: boolean = true;
+  @Prop
+  idPrefix: string = 'home_recent_report';
   onOpen: () => void = (): void => {};
 
   private palette(): ThemePalette {
@@ -60,7 +62,7 @@ export struct HistoryReportCard {
     .alignItems(HorizontalAlign.Start)
     .borderRadius(14)
     .backgroundColor(this.palette().surfaceBackground)
-    .id(`home_recent_report_${this.item.reportId}`)
+    .id(`${this.idPrefix}_${this.item.reportId}`)
     .accessibilityGroup(true)
     .accessibilityText(this.item.accessibilityText)
     .accessibilityDescription($r('app.string.home_recent_open_accessibility'))

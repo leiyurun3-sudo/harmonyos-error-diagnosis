@@ -1,12 +1,14 @@
+import { AsyncStatePanel } from '../../components/common/AsyncStatePanel';
 import { EmptyStateView } from '../../components/common/EmptyStateView';
+import { InlineErrorNotice } from '../../components/common/InlineErrorNotice';
 import { HistoryReportCard } from '../../components/history/HistoryReportCard';
+import { OperationStatus } from '../../model/ResultModels';
 import { AppRouter } from '../../router/AppRouter';
-import { RouteName } from '../../router/RouteNames';
-import { getHomeViewModel } from '../../service/platform/AppRuntime';
+import { createHistoryViewModel } from '../../service/platform/AppRuntime';
 import { AppStateStore } from '../../store/AppStateStore';
 import { getThemePalette, ThemePalette } from '../../theme/ThemeModels';
 import { HomeReportItem } from '../../viewmodel/home/HomeModels';
-import { HomeViewModel } from '../../viewmodel/home/HomeViewModel';
+import { HistoryViewModel } from '../../viewmodel/history/HistoryViewModel';
 
 @Component
 export struct RecordsRootView {
@@ -15,14 +17,21 @@ export struct RecordsRootView {
   @Consume('appState')
   appState: AppStateStore;
   @State
-  private homeViewModel: HomeViewModel = getHomeViewModel();
+  private viewModel: HistoryViewModel | undefined = undefined;
 
   private palette(): ThemePalette {
     return getThemePalette(this.appState.effectiveTheme, this.appState.accentTheme);
   }
 
   aboutToAppear(): void {
-    this.homeViewModel.loadRecent();
+    if (this.viewModel === undefined) {
+      this.viewModel = createHistoryViewModel(this.router);
+    }
+    this.viewModel.loadHistory();
+  }
+
+  aboutToDisappear(): void {
+    this.viewModel?.dispose();
   }
 
   build() {
@@ -37,24 +46,36 @@ export struct RecordsRootView {
           .width('100%')
           .fontSize(15 * this.appState.contentFontMultiplier)
           .fontColor(this.palette().secondaryText)
-        if (this.homeViewModel.recentReports.length > 0) {
-          ForEach(this.homeViewModel.recentReports, (item: HomeReportItem) => {
-            HistoryReportCard({
-              item: item,
-              compact: false,
-              onOpen: (): void => {
-                this.router.openReport({
-                  reportId: item.reportId,
-                  origin: RouteName.HISTORY_SETTINGS
-                });
-              }
-            })
-          }, (item: HomeReportItem): string => item.reportId)
-        } else {
-          EmptyStateView({
-            title: '还没有诊断记录',
-            description: '完成诊断并主动保存后，记录会显示在这里。'
+        if (this.viewModel === undefined || this.viewModel.historyStatus === OperationStatus.LOADING) {
+          AsyncStatePanel({
+            status: OperationStatus.LOADING,
+            message: '正在加载历史记录',
+            showContent: false
           })
+        } else {
+          if (this.viewModel.historyStatus === OperationStatus.ERROR) {
+            InlineErrorNotice({
+              message: this.viewModel.historyError?.message ??
+                '暂时无法读取历史记录，请稍后重试。',
+              actionLabel: '重新加载',
+              onAction: (): void => { this.viewModel?.retryHistory(); }
+            })
+          }
+          if (this.viewModel.isHistoryEmpty) {
+            EmptyStateView({
+              title: '还没有诊断记录',
+              description: '完成诊断并主动保存后，记录会显示在这里。'
+            })
+          } else {
+            ForEach(this.viewModel.historyReports, (item: HomeReportItem) => {
+              HistoryReportCard({
+                item: item,
+                compact: false,
+                idPrefix: 'history_report',
+                onOpen: (): void => { this.viewModel?.openReport(item.reportId); }
+              })
+            }, (item: HomeReportItem): string => item.reportId)
+          }
         }
       }
       .width('100%')

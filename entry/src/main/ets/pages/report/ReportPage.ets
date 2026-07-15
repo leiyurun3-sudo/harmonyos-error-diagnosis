@@ -1,5 +1,6 @@
 import { uiMaterial } from '@kit.ArkUI';
 import { AsyncStatePanel } from '../../components/common/AsyncStatePanel';
+import { InlineErrorNotice } from '../../components/common/InlineErrorNotice';
 import { ReportSectionCard } from '../../components/report/ReportSectionCard';
 import { DiagnosisReport } from '../../model/DiagnosisModels';
 import { OperationStatus } from '../../model/ResultModels';
@@ -43,7 +44,14 @@ export struct ReportPage {
     if (this.viewModel === undefined) {
       this.viewModel = createReportViewModel(this.routeParams, this.router);
       this.reportSnapshot = this.viewModel.report;
+      if (this.reportSnapshot === undefined && this.routeParams.reportId !== undefined) {
+        this.loadHistoricalReport();
+      }
     }
+  }
+
+  aboutToDisappear(): void {
+    this.viewModel?.dispose();
   }
 
   private palette(): ThemePalette {
@@ -52,6 +60,16 @@ export struct ReportPage {
 
   private editInput(): void {
     this.viewModel?.editInput();
+  }
+
+  private async loadHistoricalReport(): Promise<void> {
+    await this.viewModel?.loadReport();
+    this.reportSnapshot = this.viewModel?.report;
+  }
+
+  private async saveReport(): Promise<void> {
+    await this.viewModel?.saveReport();
+    this.reportSnapshot = this.viewModel?.report;
   }
 
   @Builder
@@ -69,7 +87,8 @@ export struct ReportPage {
           .fontSize(28 * this.appState.contentFontMultiplier)
             .fontWeight(FontWeight.Bold)
             .fontColor(this.palette().primaryText)
-          Text($r('app.string.report_unsaved'))
+          Text(report.savedAt === undefined ? $r('app.string.report_unsaved') :
+            $r('app.string.report_saved'))
           .fontSize(14 * this.appState.contentFontMultiplier)
             .fontColor(this.palette().accent)
         }
@@ -143,21 +162,41 @@ export struct ReportPage {
       .backgroundColor(this.palette().surfaceBackground)
 
       Column({ space: 10 }) {
-        Button($r('app.string.report_edit_text'))
-          .id('report_edit_text')
+        Button(this.viewModel?.saveOperation.status === OperationStatus.LOADING ?
+          $r('app.string.report_saving') : (this.viewModel?.isSaved ?
+          $r('app.string.report_saved') : $r('app.string.report_save')))
+          .id('report_save')
           .width('100%')
           .constraintSize({ minHeight: 48 })
+          .enabled(this.viewModel?.saveOperation.status !== OperationStatus.LOADING &&
+            !this.viewModel?.isSaved)
           .onClick((): void => {
-            this.editInput();
+            this.saveReport();
           })
-        Button($r('app.string.report_rediagnose'))
-          .id('report_rediagnose')
-          .width('100%')
-          .constraintSize({ minHeight: 48 })
-          .fontColor(this.palette().accent)
-          .onClick((): void => {
-            this.viewModel?.rediagnose();
+        if (this.viewModel?.saveOperation.status === OperationStatus.ERROR) {
+          InlineErrorNotice({
+            message: this.viewModel.saveError?.message ?? '保存失败，当前报告已保留，请重试。',
+            actionLabel: '重试保存',
+            onAction: (): void => { this.saveReport(); }
           })
+        }
+        if (this.viewModel?.hasEditableSession) {
+          Button($r('app.string.report_edit_text'))
+            .id('report_edit_text')
+            .width('100%')
+            .constraintSize({ minHeight: 48 })
+            .onClick((): void => {
+              this.editInput();
+            })
+          Button($r('app.string.report_rediagnose'))
+            .id('report_rediagnose')
+            .width('100%')
+            .constraintSize({ minHeight: 48 })
+            .fontColor(this.palette().accent)
+            .onClick((): void => {
+              this.viewModel?.rediagnose();
+            })
+        }
         Button($r('app.string.route_back_origin'))
           .width('100%')
           .constraintSize({ minHeight: 48 })
@@ -195,7 +234,9 @@ export struct ReportPage {
               status: this.viewModel.reportOperation.status,
               error: this.viewModel.reportError,
               message: this.viewModel.reportError?.message ?? '当前报告不可用。',
-              showContent: false
+              showContent: false,
+              onRetry: this.routeParams.reportId === undefined ? undefined :
+                (): void => { this.loadHistoricalReport(); }
             })
             Button(this.routeParams.origin === RouteName.HISTORY_SETTINGS ?
               $r('app.string.route_back_history_settings') : $r('app.string.route_back_origin'))

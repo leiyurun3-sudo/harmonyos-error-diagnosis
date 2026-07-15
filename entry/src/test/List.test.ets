@@ -17,6 +17,7 @@ import hiLogServiceTest from './unit/HiLogService.test';
 import homeViewModelTest from './unit/HomeViewModel.test';
 import homeModelsTest from './unit/HomeModels.test';
 import homeNavigationTest from './unit/HomeNavigation.test';
+import historyViewModelTest from './unit/HistoryViewModel.test';
 import httpStatusResourceTest from './unit/HttpStatusResource.test';
 import httpStatusResourceLoaderTest from './unit/HttpStatusResourceLoader.test';
 import inputValidationServiceTest from './unit/InputValidationService.test';
@@ -55,6 +56,7 @@ export default function testsuite() {
   homeViewModelTest();
   homeModelsTest();
   homeNavigationTest();
+  historyViewModelTest();
   httpStatusResourceTest();
   httpStatusResourceLoaderTest();
   inputValidationServiceTest();

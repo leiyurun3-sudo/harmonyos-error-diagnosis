@@ -54,11 +54,6 @@ export default function navigationFlowTest() {
       await driver.delayMs(UI_SETTLE_MS);
       await driver.assertComponentExist(ON.text('记录与设置页'));
 
-      await clickText(driver, '查看报告占位页');
-      await driver.assertComponentExist(ON.text('诊断报告页'));
-      await clickText(driver, '返回记录与设置');
-      await driver.assertComponentExist(ON.text('记录与设置页'));
-
       await driver.pressBack();
       await driver.delayMs(UI_SETTLE_MS);
       await assertHome(driver);
