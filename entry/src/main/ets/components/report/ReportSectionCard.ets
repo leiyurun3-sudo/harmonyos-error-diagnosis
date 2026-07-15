@@ -15,7 +15,7 @@ export struct ReportSectionCard {
   kind: ReportSectionKind = ReportSectionKind.STANDARD;
 
   private palette(): ThemePalette {
-    return getThemePalette(this.appState.effectiveTheme);
+    return getThemePalette(this.appState.effectiveTheme, this.appState.accentTheme);
   }
 
   build() {
@@ -24,12 +24,12 @@ export struct ReportSectionCard {
         Row({ space: 8 }) {
           if (this.kind === ReportSectionKind.RISK) {
             Text('⚠')
-              .fontSize(20)
+          .fontSize(20 * this.appState.contentFontMultiplier)
               .fontColor(this.palette().error)
               .accessibilityText($r('app.string.report_risk_icon_accessibility'))
           }
           Text(this.title)
-            .fontSize(20)
+            .fontSize(20 * this.appState.contentFontMultiplier)
             .fontWeight(FontWeight.Bold)
             .fontColor(this.kind === ReportSectionKind.RISK ? this.palette().error : this.palette().primaryText)
         }
@@ -42,7 +42,7 @@ export struct ReportSectionCard {
               .fontColor(this.kind === ReportSectionKind.RISK ? this.palette().error : this.palette().accent)
             Text(item)
               .layoutWeight(1)
-              .fontSize(16)
+          .fontSize(16 * this.appState.contentFontMultiplier)
               .fontColor(this.palette().primaryText)
           }
           .width('100%')

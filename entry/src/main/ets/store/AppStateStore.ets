@@ -5,9 +5,12 @@ import {
   OperationStatus
 } from '../model/ResultModels';
 import {
+  AccentTheme,
+  ContentFontScale,
   createDefaultUserSettings,
   ThemeMode,
-  UserSettings
+  UserSettings,
+  VisualEffectMode
 } from '../model/SettingsModels';
 import {
   EffectiveTheme,
@@ -34,7 +37,10 @@ function copySettings(settings: UserSettings): UserSettings {
     themeMode: settings.themeMode,
     historyLimit: settings.historyLimit,
     firstLaunchCompleted: settings.firstLaunchCompleted,
-    draftRecoveryEnabled: settings.draftRecoveryEnabled
+    draftRecoveryEnabled: settings.draftRecoveryEnabled,
+    accentTheme: settings.accentTheme,
+    contentFontScale: settings.contentFontScale,
+    visualEffectMode: settings.visualEffectMode
   };
 }
 
@@ -58,6 +64,10 @@ export class AppStateStore {
   systemTheme: EffectiveTheme = EffectiveTheme.LIGHT;
   effectiveTheme: EffectiveTheme = EffectiveTheme.LIGHT;
   isThemeSessionOnly: boolean = false;
+  accentTheme: AccentTheme = AccentTheme.BLUE;
+  contentFontScale: ContentFontScale = ContentFontScale.STANDARD;
+  contentFontMultiplier: number = 1;
+  visualEffectMode: VisualEffectMode = VisualEffectMode.FULL;
 
   private settingsValue: UserSettings = createDefaultUserSettings();
   private loadStateValue: OperationState = createInitialOperationState();
@@ -94,6 +104,7 @@ export class AppStateStore {
   completeLoad(settings: UserSettings): void {
     this.settingsValue = copySettings(settings);
     this.selectedThemeMode = settings.themeMode;
+    this.applyVisualState(settings);
     this.recalculateEffectiveTheme();
     this.loadStateValue = {
       status: OperationStatus.SUCCESS
@@ -106,6 +117,9 @@ export class AppStateStore {
   completeLoadPreservingTheme(settings: UserSettings): void {
     const merged = copySettings(settings);
     merged.themeMode = this.selectedThemeMode;
+    merged.accentTheme = this.accentTheme;
+    merged.contentFontScale = this.contentFontScale;
+    merged.visualEffectMode = this.visualEffectMode;
     this.settingsValue = merged;
     this.recalculateEffectiveTheme();
     this.loadStateValue = {
@@ -142,9 +156,31 @@ export class AppStateStore {
     return true;
   }
 
+  beginVisualSave(
+    accentTheme: AccentTheme,
+    contentFontScale: ContentFontScale,
+    visualEffectMode: VisualEffectMode
+  ): boolean {
+    if (this.saveStateValue.status === OperationStatus.LOADING) {
+      return false;
+    }
+    const updated = copySettings(this.settingsValue);
+    updated.accentTheme = accentTheme;
+    updated.contentFontScale = contentFontScale;
+    updated.visualEffectMode = visualEffectMode;
+    this.settingsValue = updated;
+    this.applyVisualState(updated);
+    this.saveStateValue = {
+      status: OperationStatus.LOADING
+    };
+    this.lastSettingsErrorValue = undefined;
+    return true;
+  }
+
   completeSave(settings: UserSettings): void {
     this.settingsValue = copySettings(settings);
     this.selectedThemeMode = settings.themeMode;
+    this.applyVisualState(settings);
     this.recalculateEffectiveTheme();
     this.saveStateValue = {
       status: OperationStatus.SUCCESS
@@ -190,5 +226,18 @@ export class AppStateStore {
 
   private recalculateEffectiveTheme(): void {
     this.effectiveTheme = resolveEffectiveTheme(this.selectedThemeMode, this.systemTheme);
+  }
+
+  private applyVisualState(settings: UserSettings): void {
+    this.accentTheme = settings.accentTheme;
+    this.contentFontScale = settings.contentFontScale;
+    if (settings.contentFontScale === ContentFontScale.COMPACT) {
+      this.contentFontMultiplier = 0.9;
+    } else if (settings.contentFontScale === ContentFontScale.LARGE) {
+      this.contentFontMultiplier = 1.15;
+    } else {
+      this.contentFontMultiplier = 1;
+    }
+    this.visualEffectMode = settings.visualEffectMode;
   }
 }

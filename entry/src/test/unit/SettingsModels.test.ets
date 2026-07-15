@@ -1,7 +1,10 @@
 import { describe, expect, it } from '@ohos/hypium';
 import {
+  AccentTheme,
+  ContentFontScale,
   createDefaultUserSettings,
-  ThemeMode
+  ThemeMode,
+  VisualEffectMode
 } from '../../main/ets/model/SettingsModels';
 
 export default function settingsModelsTest() {
@@ -22,6 +25,9 @@ export default function settingsModelsTest() {
       expect(second.historyLimit).assertEqual(200);
       expect(second.firstLaunchCompleted).assertFalse();
       expect(second.draftRecoveryEnabled).assertFalse();
+      expect(second.accentTheme).assertEqual(AccentTheme.BLUE);
+      expect(second.contentFontScale).assertEqual(ContentFontScale.STANDARD);
+      expect(second.visualEffectMode).assertEqual(VisualEffectMode.FULL);
     });
   });
 }

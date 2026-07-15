@@ -9,7 +9,12 @@ import {
 } from '../../domain/diagnosis/DiagnosisService';
 import { RuleMatcher } from '../../domain/diagnosis/RuleMatcher';
 import { InputValidationService } from '../../domain/validation/InputValidationService';
-import { ThemeMode } from '../../model/SettingsModels';
+import {
+  AccentTheme,
+  ContentFontScale,
+  ThemeMode,
+  VisualEffectMode
+} from '../../model/SettingsModels';
 import { DiagnosisRuleResourceLoader } from '../../repository/static/DiagnosisRuleResourceLoader';
 import { HttpStatusResourceLoader } from '../../repository/static/HttpStatusResourceLoader';
 import {
@@ -48,6 +53,7 @@ import {
   DiagnosisViewModel
 } from '../../viewmodel/diagnosis/DiagnosisViewModel';
 import { HomeViewModel } from '../../viewmodel/home/HomeViewModel';
+import { HistoryViewModel } from '../../viewmodel/history/HistoryViewModel';
 import { ReportViewModel } from '../../viewmodel/report/ReportViewModel';
 import { SettingsViewModel } from '../../viewmodel/settings/SettingsViewModel';
 import { ThemePlatform } from '../../theme/ThemeModels';
@@ -63,6 +69,7 @@ export const appStateStore: AppStateStore = new AppStateStore();
 let settingsViewModel: SettingsViewModel | undefined;
 let homeViewModel: HomeViewModel | undefined;
 let reportDataStore: LazyReportDataStore | undefined;
+let reportRepository: ReportRepository | undefined;
 let diagnosisSessionStore: DiagnosisSessionStore | undefined;
 let diagnosisStaticRepository: StaticContentRepository | undefined;
 let diagnosisService: DiagnosisService | undefined;
@@ -153,10 +160,28 @@ export function createReportViewModel(
   routeParams: ReportRouteParams,
   router: AppRouter
 ): ReportViewModel {
-  if (diagnosisSessionStore === undefined) {
+  if (diagnosisSessionStore === undefined || reportRepository === undefined) {
     throw new Error('DIAGNOSIS_RUNTIME_NOT_CONFIGURED');
   }
-  return new ReportViewModel(diagnosisSessionStore, router, routeParams);
+  return new ReportViewModel(
+    diagnosisSessionStore,
+    reportRepository,
+    router,
+    routeParams,
+    async (): Promise<boolean> => {
+      if (homeViewModel === undefined) {
+        return false;
+      }
+      return homeViewModel.loadRecent();
+    }
+  );
+}
+
+export function createHistoryViewModel(router: AppRouter): HistoryViewModel {
+  if (reportRepository === undefined) {
+    throw new Error('HOME_RUNTIME_NOT_CONFIGURED');
+  }
+  return new HistoryViewModel(reportRepository, router);
 }
 
 function configureHomeRuntime(context: common.UIAbilityContext): void {
@@ -173,6 +198,7 @@ function configureHomeRuntime(context: common.UIAbilityContext): void {
 /** Testable composition seam; production passes the real LocalReportRepository above. */
 export function configureHomeRuntimeWithRepository(repository: ReportRepository): void {
   homeViewModel?.dispose();
+  reportRepository = repository;
   homeViewModel = new HomeViewModel(repository);
 }
 
@@ -201,6 +227,17 @@ export function switchApplicationTheme(themeMode: ThemeMode): Promise<boolean> {
   return settingsViewModel.switchTheme(themeMode);
 }
 
+export function updateApplicationVisualPreferences(
+  accentTheme: AccentTheme,
+  contentFontScale: ContentFontScale,
+  visualEffectMode: VisualEffectMode
+): Promise<boolean> {
+  if (settingsViewModel === undefined) {
+    return Promise.resolve(false);
+  }
+  return settingsViewModel.updateVisualPreferences(accentTheme, contentFontScale, visualEffectMode);
+}
+
 export function resetApplicationSettings(): Promise<boolean> {
   if (settingsViewModel === undefined) {
     return Promise.resolve(false);
@@ -219,6 +256,7 @@ export function disposeAppRuntime(): void {
   homeViewModel = undefined;
   reportDataStore?.close();
   reportDataStore = undefined;
+  reportRepository = undefined;
   diagnosisSessionStore = undefined;
   diagnosisStaticRepository = undefined;
   diagnosisService = undefined;

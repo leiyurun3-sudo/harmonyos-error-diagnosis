@@ -10,7 +10,7 @@ export struct ToolsPage {
   appState: AppStateStore;
 
   private palette(): ThemePalette {
-    return getThemePalette(this.appState.effectiveTheme);
+    return getThemePalette(this.appState.effectiveTheme, this.appState.accentTheme);
   }
 
   build() {

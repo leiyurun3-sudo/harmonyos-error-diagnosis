@@ -85,6 +85,10 @@
       "value": "点击打开这份历史诊断报告"
     },
     {
+      "name": "history_description",
+      "value": "已保存的本地诊断报告，按保存时间从新到旧排列。"
+    },
+    {
       "name": "home_privacy_note",
       "value": "报告仅在你主动保存后写入应用本地；首页不会申请图片权限。"
     },
@@ -187,6 +191,18 @@
     {
       "name": "report_unsaved",
       "value": "尚未保存"
+    },
+    {
+      "name": "report_save",
+      "value": "保存报告"
+    },
+    {
+      "name": "report_saving",
+      "value": "保存中…"
+    },
+    {
+      "name": "report_saved",
+      "value": "已保存"
     },
     {
       "name": "report_original_text",

@@ -24,7 +24,7 @@ export struct InlineErrorNotice {
   onDismiss?: ComponentAction;
 
   private palette(): ThemePalette {
-    return getThemePalette(this.appState.effectiveTheme);
+    return getThemePalette(this.appState.effectiveTheme, this.appState.accentTheme);
   }
 
   private presentation(): InlineNoticePresentation {

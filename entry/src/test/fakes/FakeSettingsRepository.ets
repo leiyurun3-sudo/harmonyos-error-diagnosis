@@ -13,7 +13,10 @@ function copySettings(settings: UserSettings): UserSettings {
     themeMode: settings.themeMode,
     historyLimit: settings.historyLimit,
     firstLaunchCompleted: settings.firstLaunchCompleted,
-    draftRecoveryEnabled: settings.draftRecoveryEnabled
+    draftRecoveryEnabled: settings.draftRecoveryEnabled,
+    accentTheme: settings.accentTheme,
+    contentFontScale: settings.contentFontScale,
+    visualEffectMode: settings.visualEffectMode
   };
 }
 

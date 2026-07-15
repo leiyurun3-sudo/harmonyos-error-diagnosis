@@ -1,8 +1,10 @@
 import { uiMaterial } from '@kit.ArkUI';
 import { AsyncStatePanel } from '../../components/common/AsyncStatePanel';
+import { InlineErrorNotice } from '../../components/common/InlineErrorNotice';
 import { ReportSectionCard } from '../../components/report/ReportSectionCard';
 import { DiagnosisReport } from '../../model/DiagnosisModels';
 import { OperationStatus } from '../../model/ResultModels';
+import { VisualEffectMode } from '../../model/SettingsModels';
 import { AppRouter } from '../../router/AppRouter';
 import { RouteName } from '../../router/RouteNames';
 import { ReportRouteParams } from '../../router/RouteModels';
@@ -42,15 +44,32 @@ export struct ReportPage {
     if (this.viewModel === undefined) {
       this.viewModel = createReportViewModel(this.routeParams, this.router);
       this.reportSnapshot = this.viewModel.report;
+      if (this.reportSnapshot === undefined && this.routeParams.reportId !== undefined) {
+        this.loadHistoricalReport();
+      }
     }
   }
 
+  aboutToDisappear(): void {
+    this.viewModel?.dispose();
+  }
+
   private palette(): ThemePalette {
-    return getThemePalette(this.appState.effectiveTheme);
+    return getThemePalette(this.appState.effectiveTheme, this.appState.accentTheme);
   }
 
   private editInput(): void {
     this.viewModel?.editInput();
+  }
+
+  private async loadHistoricalReport(): Promise<void> {
+    await this.viewModel?.loadReport();
+    this.reportSnapshot = this.viewModel?.report;
+  }
+
+  private async saveReport(): Promise<void> {
+    await this.viewModel?.saveReport();
+    this.reportSnapshot = this.viewModel?.report;
   }
 
   @Builder
@@ -59,23 +78,24 @@ export struct ReportPage {
       Column({ space: 8 }) {
         Row({ space: 10 }) {
           Text('✓')
-            .fontSize(22)
+          .fontSize(22 * this.appState.contentFontMultiplier)
             .fontWeight(FontWeight.Bold)
             .fontColor(this.palette().accent)
             .accessibilityText('诊断已完成')
           Text(report.errorType)
             .layoutWeight(1)
-            .fontSize(28)
+          .fontSize(28 * this.appState.contentFontMultiplier)
             .fontWeight(FontWeight.Bold)
             .fontColor(this.palette().primaryText)
-          Text($r('app.string.report_unsaved'))
-            .fontSize(14)
+          Text(report.savedAt === undefined ? $r('app.string.report_unsaved') :
+            $r('app.string.report_saved'))
+          .fontSize(14 * this.appState.contentFontMultiplier)
             .fontColor(this.palette().accent)
         }
         .width('100%')
         Text(report.summary)
           .width('100%')
-          .fontSize(17)
+          .fontSize(17 * this.appState.contentFontMultiplier)
           .fontColor(this.palette().secondaryText)
       }
       .width('100%')
@@ -83,14 +103,17 @@ export struct ReportPage {
       .padding(16)
       .borderRadius(14)
       .backgroundColor(this.palette().focusSurface)
-      .backgroundBlurStyle(this.appState.effectiveTheme === EffectiveTheme.DARK ?
+      .backgroundBlurStyle(this.appState.visualEffectMode !== VisualEffectMode.OFF &&
+        this.appState.effectiveTheme === EffectiveTheme.DARK ?
         BlurStyle.Thin : BlurStyle.NONE)
-      .systemMaterial(this.appState.effectiveTheme === EffectiveTheme.LIGHT ?
+      .systemMaterial(this.appState.visualEffectMode !== VisualEffectMode.OFF &&
+        this.appState.effectiveTheme === EffectiveTheme.LIGHT ?
         this.lightFocusMaterial : undefined)
       .border({ width: 2, color: this.palette().focusBorder })
       .shadow({
-        radius: 24,
-        color: this.palette().focusGlow,
+        radius: this.appState.visualEffectMode === VisualEffectMode.FULL ? 24 :
+          (this.appState.visualEffectMode === VisualEffectMode.REDUCED ? 10 : 0),
+        color: this.appState.visualEffectMode === VisualEffectMode.OFF ? '#00000000' : this.palette().focusGlow,
         offsetX: 0,
         offsetY: 6
       })
@@ -115,13 +138,13 @@ export struct ReportPage {
 
       Column({ space: 10 }) {
         Text($r('app.string.report_original_text'))
-          .fontSize(20)
+          .fontSize(20 * this.appState.contentFontMultiplier)
           .fontWeight(FontWeight.Bold)
           .fontColor(this.palette().primaryText)
         Text(report.rawText)
           .id('report_raw_text')
           .width('100%')
-          .fontSize(15)
+          .fontSize(15 * this.appState.contentFontMultiplier)
           .fontColor(this.palette().secondaryText)
           .maxLines(this.rawTextExpanded ? 20 : 4)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -139,21 +162,41 @@ export struct ReportPage {
       .backgroundColor(this.palette().surfaceBackground)
 
       Column({ space: 10 }) {
-        Button($r('app.string.report_edit_text'))
-          .id('report_edit_text')
+        Button(this.viewModel?.saveOperation.status === OperationStatus.LOADING ?
+          $r('app.string.report_saving') : (this.viewModel?.isSaved ?
+          $r('app.string.report_saved') : $r('app.string.report_save')))
+          .id('report_save')
           .width('100%')
           .constraintSize({ minHeight: 48 })
+          .enabled(this.viewModel?.saveOperation.status !== OperationStatus.LOADING &&
+            !this.viewModel?.isSaved)
           .onClick((): void => {
-            this.editInput();
+            this.saveReport();
           })
-        Button($r('app.string.report_rediagnose'))
-          .id('report_rediagnose')
-          .width('100%')
-          .constraintSize({ minHeight: 48 })
-          .fontColor(this.palette().accent)
-          .onClick((): void => {
-            this.viewModel?.rediagnose();
+        if (this.viewModel?.saveOperation.status === OperationStatus.ERROR) {
+          InlineErrorNotice({
+            message: this.viewModel.saveError?.message ?? '保存失败，当前报告已保留，请重试。',
+            actionLabel: '重试保存',
+            onAction: (): void => { this.saveReport(); }
           })
+        }
+        if (this.viewModel?.hasEditableSession) {
+          Button($r('app.string.report_edit_text'))
+            .id('report_edit_text')
+            .width('100%')
+            .constraintSize({ minHeight: 48 })
+            .onClick((): void => {
+              this.editInput();
+            })
+          Button($r('app.string.report_rediagnose'))
+            .id('report_rediagnose')
+            .width('100%')
+            .constraintSize({ minHeight: 48 })
+            .fontColor(this.palette().accent)
+            .onClick((): void => {
+              this.viewModel?.rediagnose();
+            })
+        }
         Button($r('app.string.route_back_origin'))
           .width('100%')
           .constraintSize({ minHeight: 48 })
@@ -174,7 +217,7 @@ export struct ReportPage {
         Column({ space: 16 }) {
           Text($r('app.string.route_report_title'))
             .width('100%')
-            .fontSize(28)
+            .fontSize(28 * this.appState.contentFontMultiplier)
             .fontWeight(FontWeight.Bold)
             .fontColor(this.palette().primaryText)
 
@@ -191,7 +234,9 @@ export struct ReportPage {
               status: this.viewModel.reportOperation.status,
               error: this.viewModel.reportError,
               message: this.viewModel.reportError?.message ?? '当前报告不可用。',
-              showContent: false
+              showContent: false,
+              onRetry: this.routeParams.reportId === undefined ? undefined :
+                (): void => { this.loadHistoricalReport(); }
             })
             Button(this.routeParams.origin === RouteName.HISTORY_SETTINGS ?
               $r('app.string.route_back_history_settings') : $r('app.string.route_back_origin'))

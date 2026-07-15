@@ -1,10 +1,11 @@
 import { describe, expect, it } from '@ohos/hypium';
 import { OperationStatus } from '../../main/ets/model/ResultModels';
-import { ThemeMode } from '../../main/ets/model/SettingsModels';
+import { AccentTheme, ThemeMode } from '../../main/ets/model/SettingsModels';
 import { AppStateStore } from '../../main/ets/store/AppStateStore';
 import {
   EffectiveTheme,
   getThemePalette,
+  resolveChoiceVisualState,
   resolveEffectiveTheme
 } from '../../main/ets/theme/ThemeModels';
 
@@ -69,6 +70,27 @@ export default function appStateStoreTest() {
       expect(dark.focusSurface).assertEqual('#805179C8');
       expect(dark.focusBorder).assertEqual('#F0B9DDFF');
       expect(dark.focusGlow).assertEqual('#B35D8FFF');
+    });
+
+    it('maps an accent preset without replacing the light and dark semantic surfaces', 0, () => {
+      const blue = getThemePalette(EffectiveTheme.LIGHT, AccentTheme.BLUE);
+      const green = getThemePalette(EffectiveTheme.LIGHT, AccentTheme.GREEN);
+
+      expect(blue.pageBackground).assertEqual(green.pageBackground);
+      expect(blue.accent === green.accent).assertFalse();
+      expect(blue.accentSurface === green.accentSurface).assertFalse();
+      expect(blue.focusGlow === green.focusGlow).assertFalse();
+    });
+
+    it('gives only the selected settings choice a filled accent surface', 0, () => {
+      const palette = getThemePalette(EffectiveTheme.DARK, AccentTheme.BLUE);
+      const selected = resolveChoiceVisualState(palette, true);
+      const unselected = resolveChoiceVisualState(palette, false);
+
+      expect(selected.background).assertEqual(palette.accent);
+      expect(selected.foreground).assertEqual('#FFFFFFFF');
+      expect(unselected.background).assertEqual(palette.surfaceBackground);
+      expect(unselected.borderWidth).assertEqual(0);
     });
   });
 }

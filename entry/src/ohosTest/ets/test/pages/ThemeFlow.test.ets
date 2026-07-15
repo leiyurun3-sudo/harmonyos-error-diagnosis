@@ -69,11 +69,6 @@ export default function themeFlowTest() {
       await driver.assertComponentExist(ON.text('当前主题：DARK/DARK'));
       await driver.pressBack();
       await driver.delayMs(UI_SETTLE_MS);
-      await clickText(driver, '查看报告占位页');
-      await driver.assertComponentExist(ON.text('诊断报告页'));
-      await driver.assertComponentExist(ON.text('当前主题：DARK/DARK'));
-      await driver.pressBack();
-      await driver.delayMs(UI_SETTLE_MS);
       await driver.pressBack();
       await driver.delayMs(UI_SETTLE_MS);
 

@@ -10,9 +10,12 @@ import {
   createSuccessResult
 } from '../../model/ResultModels';
 import {
+  AccentTheme,
+  ContentFontScale,
   createDefaultUserSettings,
   ThemeMode,
-  UserSettings
+  UserSettings,
+  VisualEffectMode
 } from '../../model/SettingsModels';
 import {
   HiLogService,
@@ -35,7 +38,10 @@ function copySettings(settings: UserSettings): UserSettings {
     themeMode: settings.themeMode,
     historyLimit: settings.historyLimit,
     firstLaunchCompleted: settings.firstLaunchCompleted,
-    draftRecoveryEnabled: settings.draftRecoveryEnabled
+    draftRecoveryEnabled: settings.draftRecoveryEnabled,
+    accentTheme: settings.accentTheme,
+    contentFontScale: settings.contentFontScale,
+    visualEffectMode: settings.visualEffectMode
   };
 }
 
@@ -57,12 +63,36 @@ function normalizedHistoryLimit(value: PreferenceValue): number {
   return typeof value === 'number' && value === HISTORY_RECORD_LIMIT ? value : HISTORY_RECORD_LIMIT;
 }
 
+function normalizedAccentTheme(value: PreferenceValue): AccentTheme {
+  if (value === AccentTheme.CYAN || value === AccentTheme.PURPLE || value === AccentTheme.GREEN) {
+    return value;
+  }
+  return AccentTheme.BLUE;
+}
+
+function normalizedContentFontScale(value: PreferenceValue): ContentFontScale {
+  if (value === ContentFontScale.COMPACT || value === ContentFontScale.LARGE) {
+    return value;
+  }
+  return ContentFontScale.STANDARD;
+}
+
+function normalizedVisualEffectMode(value: PreferenceValue): VisualEffectMode {
+  if (value === VisualEffectMode.REDUCED || value === VisualEffectMode.OFF) {
+    return value;
+  }
+  return VisualEffectMode.FULL;
+}
+
 function normalizedSettings(settings: UserSettings): UserSettings {
   return {
     themeMode: normalizedTheme(settings.themeMode),
     historyLimit: normalizedHistoryLimit(settings.historyLimit),
     firstLaunchCompleted: normalizedBoolean(settings.firstLaunchCompleted, false),
-    draftRecoveryEnabled: normalizedBoolean(settings.draftRecoveryEnabled, false)
+    draftRecoveryEnabled: normalizedBoolean(settings.draftRecoveryEnabled, false),
+    accentTheme: normalizedAccentTheme(settings.accentTheme),
+    contentFontScale: normalizedContentFontScale(settings.contentFontScale),
+    visualEffectMode: normalizedVisualEffectMode(settings.visualEffectMode)
   };
 }
 
@@ -80,7 +110,7 @@ export class LocalSettingsRepository implements SettingsRepository {
     const defaults = createDefaultUserSettings();
     try {
       const schemaVersion = await this.store.read(StorageKey.SCHEMA_VERSION, SETTINGS_SCHEMA_VERSION);
-      if (typeof schemaVersion !== 'number' || schemaVersion !== SETTINGS_SCHEMA_VERSION) {
+      if (typeof schemaVersion !== 'number' || (schemaVersion !== 1 && schemaVersion !== SETTINGS_SCHEMA_VERSION)) {
         return createSuccessResult<UserSettings>(defaults);
       }
       const themeMode = await this.store.read(StorageKey.THEME_MODE, defaults.themeMode);
@@ -93,11 +123,17 @@ export class LocalSettingsRepository implements SettingsRepository {
         StorageKey.DRAFT_RECOVERY_ENABLED,
         defaults.draftRecoveryEnabled
       );
+      const accentTheme = await this.store.read(StorageKey.ACCENT_THEME, defaults.accentTheme);
+      const contentFontScale = await this.store.read(StorageKey.CONTENT_FONT_SCALE, defaults.contentFontScale);
+      const visualEffectMode = await this.store.read(StorageKey.VISUAL_EFFECT_MODE, defaults.visualEffectMode);
       return createSuccessResult<UserSettings>({
         themeMode: normalizedTheme(themeMode),
         historyLimit: normalizedHistoryLimit(historyLimit),
         firstLaunchCompleted: normalizedBoolean(firstLaunchCompleted, defaults.firstLaunchCompleted),
-        draftRecoveryEnabled: normalizedBoolean(draftRecoveryEnabled, defaults.draftRecoveryEnabled)
+        draftRecoveryEnabled: normalizedBoolean(draftRecoveryEnabled, defaults.draftRecoveryEnabled),
+        accentTheme: normalizedAccentTheme(accentTheme),
+        contentFontScale: normalizedContentFontScale(contentFontScale),
+        visualEffectMode: normalizedVisualEffectMode(visualEffectMode)
       });
     } catch (_) {
       return this.readFailure();
@@ -129,6 +165,9 @@ export class LocalSettingsRepository implements SettingsRepository {
     await this.store.write(StorageKey.HISTORY_LIMIT, settings.historyLimit);
     await this.store.write(StorageKey.FIRST_LAUNCH_COMPLETED, settings.firstLaunchCompleted);
     await this.store.write(StorageKey.DRAFT_RECOVERY_ENABLED, settings.draftRecoveryEnabled);
+    await this.store.write(StorageKey.ACCENT_THEME, settings.accentTheme);
+    await this.store.write(StorageKey.CONTENT_FONT_SCALE, settings.contentFontScale);
+    await this.store.write(StorageKey.VISUAL_EFFECT_MODE, settings.visualEffectMode);
     await this.store.write(StorageKey.SCHEMA_VERSION, SETTINGS_SCHEMA_VERSION);
     await this.store.flush();
   }

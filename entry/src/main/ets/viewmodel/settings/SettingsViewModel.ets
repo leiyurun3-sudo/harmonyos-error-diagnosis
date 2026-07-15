@@ -5,8 +5,11 @@ import {
   OperationStatus
 } from '../../model/ResultModels';
 import {
+  AccentTheme,
+  ContentFontScale,
   ThemeMode,
-  UserSettings
+  UserSettings,
+  VisualEffectMode
 } from '../../model/SettingsModels';
 import { SettingsRepository } from '../../repository/settings/SettingsRepository';
 import {
@@ -134,6 +137,38 @@ export class SettingsViewModel {
       return false;
     }
     return this.finishSave(result, 'update');
+  }
+
+  async updateVisualPreferences(
+    accentTheme: AccentTheme,
+    contentFontScale: ContentFontScale,
+    visualEffectMode: VisualEffectMode
+  ): Promise<boolean> {
+    if (this.store.saveState.status === OperationStatus.LOADING ||
+      !this.store.beginVisualSave(accentTheme, contentFontScale, visualEffectMode)) {
+      return false;
+    }
+    this.settingsRevision++;
+    const generation = this.lifecycleGeneration;
+    if (this.initializationPromise !== undefined) {
+      await this.initializationPromise;
+    }
+    if (generation !== this.lifecycleGeneration) {
+      return false;
+    }
+    let result: AppResult<UserSettings>;
+    try {
+      result = await this.repository.update(this.store.settings);
+    } catch (_) {
+      result = {
+        success: false,
+        error: fallbackError(ErrorCode.SETTINGS_WRITE_FAILED)
+      };
+    }
+    if (generation !== this.lifecycleGeneration) {
+      return false;
+    }
+    return this.finishSave(result, 'visual');
   }
 
   async resetSettings(): Promise<boolean> {

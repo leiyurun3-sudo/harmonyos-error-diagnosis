@@ -28,7 +28,7 @@ export struct DiagnosisTextEditor {
   onClear?: DiagnosisEditorAction;
 
   private palette(): ThemePalette {
-    return getThemePalette(this.appState.effectiveTheme);
+    return getThemePalette(this.appState.effectiveTheme, this.appState.accentTheme);
   }
 
   build() {
@@ -36,11 +36,11 @@ export struct DiagnosisTextEditor {
       Row() {
         Text(this.sourceType === SourceType.IMAGE ?
           $r('app.string.diagnosis_source_image') : $r('app.string.diagnosis_source_text'))
-          .fontSize(14)
+          .fontSize(14 * this.appState.contentFontMultiplier)
           .fontColor(this.palette().secondaryText)
         Blank()
         Text(`${this.characterCount} / ${this.maxCharacters}`)
-          .fontSize(14)
+          .fontSize(14 * this.appState.contentFontMultiplier)
           .fontColor(this.characterCount > this.maxCharacters ? this.palette().error : this.palette().secondaryText)
           .accessibilityText(`${this.characterCount} / ${this.maxCharacters}`)
       }
@@ -53,7 +53,7 @@ export struct DiagnosisTextEditor {
         .id('diagnosis_text_editor')
         .width('100%')
         .height(280)
-        .fontSize(16)
+          .fontSize(16 * this.appState.contentFontMultiplier)
         .fontColor(this.palette().primaryText)
         .placeholderColor(this.palette().secondaryText)
         .backgroundColor(this.palette().surfaceBackground)
@@ -68,7 +68,7 @@ export struct DiagnosisTextEditor {
       Row() {
         Text($r('app.string.diagnosis_editor_privacy'))
           .layoutWeight(1)
-          .fontSize(13)
+          .fontSize(13 * this.appState.contentFontMultiplier)
           .fontColor(this.palette().secondaryText)
         Button($r('app.string.diagnosis_clear'))
           .enabled(!this.readOnly && this.text.length > 0)

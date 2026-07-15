@@ -5,6 +5,7 @@ import { NoticeSeverity } from '../../components/common/CommonComponentModels';
 import { DiagnosisTextEditor } from '../../components/diagnosis/DiagnosisTextEditor';
 import { SourceType } from '../../model/DiagnosisModels';
 import { OperationStatus } from '../../model/ResultModels';
+import { VisualEffectMode } from '../../model/SettingsModels';
 import { AppRouter } from '../../router/AppRouter';
 import { RouteName } from '../../router/RouteNames';
 import { DiagnosisRouteParams } from '../../router/RouteModels';
@@ -44,7 +45,7 @@ export struct DiagnosisPage {
   }
 
   private palette(): ThemePalette {
-    return getThemePalette(this.appState.effectiveTheme);
+    return getThemePalette(this.appState.effectiveTheme, this.appState.accentTheme);
   }
 
   private diagnose(): void {
@@ -66,12 +67,12 @@ export struct DiagnosisPage {
               Text(this.viewModel.session.sourceType === SourceType.IMAGE ?
                 $r('app.string.diagnosis_image_title') : $r('app.string.diagnosis_text_title'))
                 .width('100%')
-                .fontSize(28)
+          .fontSize(28 * this.appState.contentFontMultiplier)
                 .fontWeight(FontWeight.Bold)
                 .fontColor(this.palette().primaryText)
               Text($r('app.string.route_diagnosis_title'))
                 .width('100%')
-                .fontSize(14)
+          .fontSize(14 * this.appState.contentFontMultiplier)
                 .fontColor(this.palette().secondaryText)
             }
             .width('100%')
@@ -132,19 +133,26 @@ export struct DiagnosisPage {
                 .fontWeight(FontWeight.Bold)
                 .fontColor(this.palette().primaryText)
                 .backgroundColor(this.palette().focusSurface)
-                .backgroundBlurStyle(this.appState.effectiveTheme === EffectiveTheme.DARK ?
+                .backgroundBlurStyle(this.appState.visualEffectMode !== VisualEffectMode.OFF &&
+                  this.appState.effectiveTheme === EffectiveTheme.DARK ?
                   BlurStyle.Thin : BlurStyle.NONE)
-                .systemMaterial(this.appState.effectiveTheme === EffectiveTheme.LIGHT ?
+                .systemMaterial(this.appState.visualEffectMode !== VisualEffectMode.OFF &&
+                  this.appState.effectiveTheme === EffectiveTheme.LIGHT ?
                   this.lightFocusMaterial : undefined)
                 .border({ width: 2, color: this.palette().focusBorder })
                 .borderRadius(14)
                 .shadow({
-                  radius: 24,
-                  color: this.palette().focusGlow,
+                  radius: this.appState.visualEffectMode === VisualEffectMode.FULL ? 24 :
+                    (this.appState.visualEffectMode === VisualEffectMode.REDUCED ? 10 : 0),
+                  color: this.appState.visualEffectMode === VisualEffectMode.OFF ? '#00000000' :
+                    this.palette().focusGlow,
                   offsetX: 0,
                   offsetY: 6
                 })
-                .scale({ x: this.startButtonScale, y: this.startButtonScale })
+                .scale({
+                  x: this.appState.visualEffectMode === VisualEffectMode.OFF ? 1 : this.startButtonScale,
+                  y: this.appState.visualEffectMode === VisualEffectMode.OFF ? 1 : this.startButtonScale
+                })
                 .animation({
                   duration: this.startButtonScale < 1 ? 100 : 180,
                   curve: this.startButtonScale < 1 ? Curve.EaseOut : Curve.Friction

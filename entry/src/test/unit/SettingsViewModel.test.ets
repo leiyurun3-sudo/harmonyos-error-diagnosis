@@ -7,9 +7,12 @@ import {
   OperationStatus
 } from '../../main/ets/model/ResultModels';
 import {
+  AccentTheme,
+  ContentFontScale,
   createDefaultUserSettings,
   ThemeMode,
-  UserSettings
+  UserSettings,
+  VisualEffectMode
 } from '../../main/ets/model/SettingsModels';
 import { HiLogService } from '../../main/ets/service/platform/HiLogService';
 import { AppStateStore } from '../../main/ets/store/AppStateStore';
@@ -120,6 +123,25 @@ export default function settingsViewModelTest() {
       expect(await fixture.viewModel.switchTheme(ThemeMode.DARK)).assertTrue();
       expect(fixture.store.selectedThemeMode).assertEqual(ThemeMode.DARK);
       expect(fixture.store.effectiveTheme).assertEqual(EffectiveTheme.DARK);
+    });
+
+    it('updates and persists visual preferences as one settings transaction', 0, async () => {
+      const fixture = createFixture();
+
+      const saved = await fixture.viewModel.updateVisualPreferences(
+        AccentTheme.GREEN,
+        ContentFontScale.LARGE,
+        VisualEffectMode.REDUCED
+      );
+
+      expect(saved).assertTrue();
+      expect(fixture.store.accentTheme).assertEqual(AccentTheme.GREEN);
+      expect(fixture.store.contentFontScale).assertEqual(ContentFontScale.LARGE);
+      expect(fixture.store.contentFontMultiplier).assertEqual(1.15);
+      expect(fixture.store.visualEffectMode).assertEqual(VisualEffectMode.REDUCED);
+      expect(fixture.repository.updates[0].accentTheme).assertEqual(AccentTheme.GREEN);
+      expect(fixture.repository.updates[0].contentFontScale).assertEqual(ContentFontScale.LARGE);
+      expect(fixture.repository.updates[0].visualEffectMode).assertEqual(VisualEffectMode.REDUCED);
     });
 
     it('switches back to SYSTEM and follows the current system theme', 0, async () => {

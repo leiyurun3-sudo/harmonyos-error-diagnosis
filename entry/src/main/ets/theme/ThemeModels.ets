@@ -1,4 +1,4 @@
-import { ThemeMode } from '../model/SettingsModels';
+import { AccentTheme, ThemeMode } from '../model/SettingsModels';
 
 /** Resolved light/dark theme used by ArkUI after SYSTEM is evaluated. */
 export enum EffectiveTheme {
@@ -21,6 +21,7 @@ export interface ThemePalette {
   primaryText: string;
   secondaryText: string;
   accent: string;
+  accentSurface: string;
   error: string;
 }
 
@@ -48,6 +49,7 @@ const LIGHT_PALETTE: ThemePalette = {
   primaryText: '#171A1F',
   secondaryText: '#5D6673',
   accent: '#0A59F7',
+  accentSurface: '#240A59F7',
   error: '#B3261E'
 };
 
@@ -65,6 +67,7 @@ const DARK_PALETTE: ThemePalette = {
   primaryText: '#F3F5F8',
   secondaryText: '#B5BDC9',
   accent: '#7EACFF',
+  accentSurface: '#337EACFF',
   error: '#FFB4AB'
 };
 
@@ -83,6 +86,7 @@ function copyPalette(palette: ThemePalette): ThemePalette {
     primaryText: palette.primaryText,
     secondaryText: palette.secondaryText,
     accent: palette.accent,
+    accentSurface: palette.accentSurface,
     error: palette.error
   };
 }
@@ -101,9 +105,55 @@ export function resolveEffectiveTheme(
   return systemTheme;
 }
 
-/** Returns an isolated semantic palette for the resolved theme. */
-export function getThemePalette(theme: EffectiveTheme): ThemePalette {
-  return copyPalette(theme === EffectiveTheme.DARK ? DARK_PALETTE : LIGHT_PALETTE);
+function applyAccent(palette: ThemePalette, theme: EffectiveTheme, accentTheme: AccentTheme): void {
+  if (accentTheme === AccentTheme.CYAN) {
+    palette.accent = theme === EffectiveTheme.DARK ? '#67E8F9' : '#007D8A';
+    palette.accentSurface = theme === EffectiveTheme.DARK ? '#3367E8F9' : '#24007D8A';
+    palette.focusGlow = theme === EffectiveTheme.DARK ? '#9967E8F9' : '#667DEAF2';
+  } else if (accentTheme === AccentTheme.PURPLE) {
+    palette.accent = theme === EffectiveTheme.DARK ? '#C4B5FD' : '#7656D6';
+    palette.accentSurface = theme === EffectiveTheme.DARK ? '#33C4B5FD' : '#247656D6';
+    palette.focusGlow = theme === EffectiveTheme.DARK ? '#99A78BFA' : '#668B6EE8';
+  } else if (accentTheme === AccentTheme.GREEN) {
+    palette.accent = theme === EffectiveTheme.DARK ? '#6EE7B7' : '#087F5B';
+    palette.accentSurface = theme === EffectiveTheme.DARK ? '#336EE7B7' : '#24087F5B';
+    palette.focusGlow = theme === EffectiveTheme.DARK ? '#996EE7B7' : '#6652C79A';
+  }
+}
+
+export interface ChoiceVisualState {
+  background: string;
+  foreground: string;
+  borderColor: string;
+  borderWidth: number;
+}
+
+/** Returns an isolated semantic palette for the resolved theme and selected accent preset. */
+export function getThemePalette(
+  theme: EffectiveTheme,
+  accentTheme: AccentTheme = AccentTheme.BLUE
+): ThemePalette {
+  const palette = copyPalette(theme === EffectiveTheme.DARK ? DARK_PALETTE : LIGHT_PALETTE);
+  applyAccent(palette, theme, accentTheme);
+  return palette;
+}
+
+/** Pure selected-state mapping used by settings choice controls. */
+export function resolveChoiceVisualState(palette: ThemePalette, selected: boolean): ChoiceVisualState {
+  if (selected) {
+    return {
+      background: palette.accent,
+      foreground: '#FFFFFFFF',
+      borderColor: palette.accent,
+      borderWidth: 1
+    };
+  }
+  return {
+    background: palette.surfaceBackground,
+    foreground: palette.primaryText,
+    borderColor: '#00000000',
+    borderWidth: 0
+  };
 }
 
 /** Stable text used only by the T12 verification surface and device tests. */

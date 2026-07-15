@@ -5,8 +5,11 @@ import {
 } from '../../main/ets/constants/StorageKeys';
 import { ErrorCode } from '../../main/ets/constants/ErrorCodes';
 import {
+  AccentTheme,
+  ContentFontScale,
   ThemeMode,
-  UserSettings
+  UserSettings,
+  VisualEffectMode
 } from '../../main/ets/model/SettingsModels';
 import { LocalSettingsRepository } from '../../main/ets/repository/settings/SettingsRepository';
 import { HiLogService } from '../../main/ets/service/platform/HiLogService';
@@ -28,7 +31,10 @@ function createChangedSettings(): UserSettings {
     themeMode: ThemeMode.DARK,
     historyLimit: 200,
     firstLaunchCompleted: true,
-    draftRecoveryEnabled: true
+    draftRecoveryEnabled: true,
+    accentTheme: AccentTheme.PURPLE,
+    contentFontScale: ContentFontScale.LARGE,
+    visualEffectMode: VisualEffectMode.REDUCED
   };
 }
 
@@ -62,6 +68,9 @@ export default function settingsRepositoryTest() {
       expect(restored.data?.historyLimit).assertEqual(200);
       expect(restored.data?.firstLaunchCompleted).assertTrue();
       expect(restored.data?.draftRecoveryEnabled).assertTrue();
+      expect(restored.data?.accentTheme).assertEqual(AccentTheme.PURPLE);
+      expect(restored.data?.contentFontScale).assertEqual(ContentFontScale.LARGE);
+      expect(restored.data?.visualEffectMode).assertEqual(VisualEffectMode.REDUCED);
       expect(secondStore.valueOf(StorageKey.SCHEMA_VERSION)).assertEqual(SETTINGS_SCHEMA_VERSION);
     });
 
@@ -80,6 +89,9 @@ export default function settingsRepositoryTest() {
       expect(restored.data?.historyLimit).assertEqual(200);
       expect(restored.data?.firstLaunchCompleted).assertFalse();
       expect(restored.data?.draftRecoveryEnabled).assertFalse();
+      expect(restored.data?.accentTheme).assertEqual(AccentTheme.BLUE);
+      expect(restored.data?.contentFontScale).assertEqual(ContentFontScale.STANDARD);
+      expect(restored.data?.visualEffectMode).assertEqual(VisualEffectMode.FULL);
     });
 
     it('falls back for invalid persisted theme and fixed history limit', 0, async (): Promise<void> => {
