@@ -4,6 +4,7 @@ import { EmptyStateView } from '../../components/common/EmptyStateView';
 import { InlineErrorNotice } from '../../components/common/InlineErrorNotice';
 import { HistoryReportCard } from '../../components/history/HistoryReportCard';
 import { FloatingGlassDock } from '../../components/navigation/FloatingGlassDock';
+import { DynamicLightField } from '../../components/experience/DynamicLightField';
 import { DockDestination } from '../../model/FloatingDockModels';
 import { OperationStatus } from '../../model/ResultModels';
 import { VisualEffectMode } from '../../model/SettingsModels';
@@ -178,6 +179,11 @@ struct HomePage {
   build() {
     Navigation(this.pathStack) {
       Stack({ alignContent: Alignment.Bottom }) {
+        DynamicLightField({
+          active: this.appState.visualEffectMode !== VisualEffectMode.OFF,
+          reduced: this.appState.visualEffectMode === VisualEffectMode.REDUCED,
+          dark: this.appState.effectiveTheme === EffectiveTheme.DARK
+        })
         if (this.selectedDock === DockDestination.HOME) {
           Scroll() {
         Column({ space: 18 }) {
@@ -301,14 +307,14 @@ struct HomePage {
             .fontColor(this.palette().secondaryText)
         }
         .width('100%')
-        .padding({ left: 20, right: 20, top: 24, bottom: 112 })
+        .padding({ left: 20, right: 20, top: 24, bottom: 190 })
         .alignItems(HorizontalAlign.Start)
       }
       .width('100%')
       .height('100%')
       .id('home_scroll')
       .scrollBar(BarState.Auto)
-      .backgroundColor(this.palette().pageBackground)
+      .backgroundColor('#00000000')
         } else if (this.selectedDock === DockDestination.TOOLS) {
           ToolsRootView()
         } else if (this.selectedDock === DockDestination.RECORDS) {
@@ -325,7 +331,7 @@ struct HomePage {
           })
         }
         .width('100%')
-        .padding({ left: 18, right: 18, bottom: 14 })
+        .padding({ left: 18, right: 18, bottom: 22 })
       }
       .width('100%')
       .height('100%')

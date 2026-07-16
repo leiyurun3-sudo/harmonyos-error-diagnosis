@@ -28,8 +28,9 @@ export default function floatingDockModelsTest() {
       const spec = getFloatingDockVisualSpec();
 
       expect(spec.horizontalInset).assertEqual(18);
-      expect(spec.height).assertEqual(64);
-      expect(spec.cornerRadius).assertEqual(25);
+      expect(spec.bottomInset).assertEqual(22);
+      expect(spec.height).assertEqual(76);
+      expect(spec.cornerRadius).assertEqual(24);
       expect(spec.lightSurface).assertEqual('#38FFFFFF');
       expect(spec.fullGlowRadius).assertEqual(18);
     });

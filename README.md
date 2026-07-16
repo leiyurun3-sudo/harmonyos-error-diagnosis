@@ -2,6 +2,38 @@
 
 HarmonyOS API 26、ArkTS Stage模型的本地开发报错诊断应用。
 
+本版在原有本地诊断、报告和历史记录基础上，完成了沉浸光感、可变字体、AI 对话、Agent、Skill、视觉 AI、互动卡片、应用子窗与零依赖演示后端。首页底部导航已改为等宽对齐，避免选中项放大后挤压内容。
+
+## 已实现功能
+
+- 本地规则诊断：输入校验、错误分类、原因分析、处理步骤、报告保存与历史查询。
+- 截图诊断：系统安全图片选择器 + Core Vision Kit OCR，识别结果可直接进入诊断流程。
+- AI 对话：内置零费用 `DevAssist Mini` 端侧规则/意图模型，断网也能演示；可切换 HTTP API。
+- Agent：本地 Planner、Skill Router、Verifier 流程；支持填写平台注册 Agent ID 检测系统 Agent 能力。
+- Skill：JSON Formatter、Error Triage、Report Writer、Privacy Redactor。
+- 视觉 AI：端侧文字识别，图片不默认上传。
+- 智慧多窗：创建应用子窗并展示“闪控窗”式诊断进度；不支持子窗的设备会返回明确降级提示。
+- 互动卡片：点击或摇一摇切换诊断卡片状态；模拟器无传感器时可点击演示。
+- 沉浸光感：核心卡片和操作使用 API 26 `uiMaterial.ImmersiveMaterial`，启用触控跟随光感。
+- 可变字体：标题和关键状态使用 `fontVariations`，信息层级随字重变化。
+- 主题与隐私：浅色、深色、跟随系统，以及完整隐私说明和本地优先策略。
+
+## 系统能力边界
+
+华为官方的系统级 Skill 入口、系统 Agent、小艺入口、系统实况窗/互动卡片通常需要开发者实名认证、平台登记、服务配置或设备支持。本仓库提供真实 SDK 适配入口和可运行的应用内演示，不伪造平台注册结果；没有资质或模拟器不支持时，会自动使用本地 Agent、Skill、点击互动卡片和应用子窗。
+
+## 演示后端
+
+`backend/` 是零第三方依赖的 Node.js 服务：
+
+```powershell
+cd backend
+npm test
+npm start
+```
+
+默认端口 `8787`，提供 `/health`、`/api/models`、`/api/chat`、`/api/agent/run` 和 `/api/vision/analyze`。先执行 `backend/start-emulator-api.ps1` 建立 HDC 端口转发，应用使用 `http://127.0.0.1:8787`；API 不可达会自动降级到免费端侧模型。详细操作见 `docs/项目使用与开发手册.md`。
+
 ## 开发环境
 
 - DevEco Studio 26.0.0.461
@@ -12,7 +44,7 @@ HarmonyOS API 26、ArkTS Stage模型的本地开发报错诊断应用。
 PowerShell执行 Hvigor前设置：
 
 ```powershell
-$env:DEVECO_SDK_HOME='D:\Dev\IDE\DevEco Studio\sdk'
+$env:DEVECO_SDK_HOME='D:\downloading\DevEco Studio\sdk'
 ```
 
 ## 验证命令

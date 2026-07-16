@@ -38,34 +38,42 @@ export struct FloatingGlassDock {
   }
 
   build() {
-    Row({ space: 4 }) {
+    Row() {
       ForEach(this.dockItems, (item: FloatingDockItem) => {
         Button() {
-          Column({ space: 2 }) {
-            Text(item.glyph)
-              .fontSize(20 * this.appState.contentFontMultiplier)
-              .fontWeight(this.isSelected(item) ? FontWeight.Bold : FontWeight.Medium)
-              .fontColor(this.isSelected(item) ? this.palette().accent : this.palette().secondaryText)
+          Column({ space: 4 }) {
+            Stack({ alignContent: Alignment.Center }) {
+              Text(item.glyph)
+                .fontSize(12 * this.appState.contentFontMultiplier)
+                .fontWeight(FontWeight.Bold)
+                .fontColor(this.isSelected(item) ? '#FFFFFF' : this.palette().secondaryText)
+                .fontVariations([{ axis: 'wght', value: this.isSelected(item) ? 780 : 620 }])
+            }
+            .width(34).height(28)
+            .borderRadius(10)
+            .backgroundColor(this.isSelected(item) ? this.palette().accent : '#12000000')
             Text(item.label)
-              .fontSize(11 * this.appState.contentFontMultiplier)
+              .fontSize(10 * this.appState.contentFontMultiplier)
               .fontWeight(this.isSelected(item) ? FontWeight.Bold : FontWeight.Medium)
               .fontColor(this.isSelected(item) ? this.palette().accent : this.palette().secondaryText)
           }
           .width('100%')
+          .height('100%')
           .justifyContent(FlexAlign.Center)
+          .alignItems(HorizontalAlign.Center)
         }
         .id(`dock_${item.destination}`)
         .layoutWeight(1)
-        .height(50)
-        .padding({ left: 4, right: 4, top: 4, bottom: 4 })
-        .borderRadius(17)
-        .backgroundColor(this.isSelected(item) ? this.palette().accentSurface : '#00000000')
+        .height(62)
+        .padding(0)
+        .borderRadius(16)
+        .backgroundColor(this.isSelected(item) ? '#105B8CFF' : '#00000000')
         .border({
-          width: this.isSelected(item) ? 1 : 0,
-          color: this.isSelected(item) ? this.palette().accent : '#00000000'
+          width: 0,
+          color: '#00000000'
         })
         .shadow({
-          radius: this.isSelected(item) && this.appState.visualEffectMode === VisualEffectMode.FULL ? 6 : 0,
+          radius: this.isSelected(item) && this.appState.visualEffectMode === VisualEffectMode.FULL ? 8 : 0,
           color: this.isSelected(item) ? this.palette().accentSurface : '#00000000',
           offsetX: 0,
           offsetY: 0
@@ -76,7 +84,8 @@ export struct FloatingGlassDock {
     }
     .width('100%')
     .height(this.visualSpec.height)
-    .padding(6)
+    .padding({ left: 8, right: 8, top: 7, bottom: 7 })
+    .alignItems(VerticalAlign.Center)
     .borderRadius(this.visualSpec.cornerRadius)
     .backgroundColor(this.appState.effectiveTheme === EffectiveTheme.DARK ?
       this.visualSpec.darkSurface : this.visualSpec.lightSurface)
@@ -87,7 +96,7 @@ export struct FloatingGlassDock {
         (this.appState.visualEffectMode === VisualEffectMode.REDUCED ? this.visualSpec.reducedGlowRadius : 3),
       color: this.appState.visualEffectMode === VisualEffectMode.OFF ? '#1F000000' : this.palette().focusGlow,
       offsetX: 0,
-      offsetY: 5
+      offsetY: 7
     })
   }
 }

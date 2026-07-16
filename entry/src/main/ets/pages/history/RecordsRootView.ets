@@ -79,7 +79,7 @@ export struct RecordsRootView {
         }
       }
       .width('100%')
-      .padding({ left: 20, right: 20, top: 24, bottom: 112 })
+      .padding({ left: 20, right: 20, top: 24, bottom: 190 })
       .alignItems(HorizontalAlign.Start)
     }
     .width('100%')

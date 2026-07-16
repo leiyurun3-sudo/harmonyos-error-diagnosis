@@ -1,6 +1,10 @@
 {
   "string": [
     {
+      "name": "accelerometer_permission_reason",
+      "value": "用于互动诊断卡片的摇一摇动态效果"
+    },
+    {
       "name": "module_desc",
       "value": "开发报错诊断助手主模块"
     },

@@ -1,0 +1,10 @@
+{
+  "name": "harmony-error-assistant-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Zero-dependency demo API for the HarmonyOS developer error assistant.",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test.js"
+  }
+}

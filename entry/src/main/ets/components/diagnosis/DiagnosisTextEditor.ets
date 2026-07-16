@@ -73,7 +73,8 @@ export struct DiagnosisTextEditor {
         Button($r('app.string.diagnosis_clear'))
           .enabled(!this.readOnly && this.text.length > 0)
           .constraintSize({ minHeight: 44 })
-          .fontColor(this.palette().accent)
+          .fontColor(!this.readOnly && this.text.length > 0 ? '#FFFFFFFF' : '#5B6474')
+          .backgroundColor(!this.readOnly && this.text.length > 0 ? '#B42318' : '#D7DCE5')
           .onClick((): void => {
             this.onClear?.();
           })

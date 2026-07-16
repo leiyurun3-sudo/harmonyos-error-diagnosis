@@ -1,6 +1,7 @@
 {
   "src": [
     "pages/home/HomePage",
-    "pages/testing/CommonComponentsTestHost"
+    "pages/testing/CommonComponentsTestHost",
+    "pages/window/FlashControlWindow"
   ]
 }

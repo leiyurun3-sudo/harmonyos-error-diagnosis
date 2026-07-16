@@ -28,9 +28,9 @@ export interface FloatingDockVisualSpec {
 export function getFloatingDockVisualSpec(): FloatingDockVisualSpec {
   return {
     horizontalInset: 18,
-    bottomInset: 14,
-    height: 64,
-    cornerRadius: 25,
+    bottomInset: 22,
+    height: 76,
+    cornerRadius: 24,
     lightSurface: '#38FFFFFF',
     darkSurface: '#3829303A',
     materialTint: '#16FFFFFF',
@@ -42,9 +42,9 @@ export function getFloatingDockVisualSpec(): FloatingDockVisualSpec {
 /** Returns a fresh array so view state cannot mutate the shared navigation definition. */
 export function getFloatingDockItems(): Array<FloatingDockItem> {
   return [
-    { destination: DockDestination.HOME, label: '首页', glyph: '⌂' },
-    { destination: DockDestination.TOOLS, label: '工具', glyph: '◇' },
-    { destination: DockDestination.RECORDS, label: '记录', glyph: '≡' },
-    { destination: DockDestination.SETTINGS, label: '设置', glyph: '⚙' }
+    { destination: DockDestination.HOME, label: '首页', glyph: 'HM' },
+    { destination: DockDestination.TOOLS, label: '智能', glyph: 'AI' },
+    { destination: DockDestination.RECORDS, label: '记录', glyph: 'RC' },
+    { destination: DockDestination.SETTINGS, label: '设置', glyph: 'ST' }
   ];
 }
