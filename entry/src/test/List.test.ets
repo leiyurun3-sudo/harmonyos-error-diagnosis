@@ -13,6 +13,7 @@ import databaseConstantsTest from './unit/DatabaseConstants.test';
 import databaseManagerTest from './unit/DatabaseManager.test';
 import errorCodesTest from './unit/ErrorCodes.test';
 import floatingDockModelsTest from './unit/FloatingDockModels.test';
+import glassActionButtonModelsTest from './unit/GlassActionButtonModels.test';
 import hiLogServiceTest from './unit/HiLogService.test';
 import homeViewModelTest from './unit/HomeViewModel.test';
 import homeModelsTest from './unit/HomeModels.test';
@@ -52,6 +53,7 @@ export default function testsuite() {
   databaseManagerTest();
   errorCodesTest();
   floatingDockModelsTest();
+  glassActionButtonModelsTest();
   hiLogServiceTest();
   homeViewModelTest();
   homeModelsTest();

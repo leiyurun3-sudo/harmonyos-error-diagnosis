@@ -2,6 +2,7 @@ import { DIAGNOSIS_INPUT_MAX_CHARACTERS } from '../../constants/AppLimits';
 import { SourceType } from '../../model/DiagnosisModels';
 import { AppStateStore } from '../../store/AppStateStore';
 import { getThemePalette, ThemePalette } from '../../theme/ThemeModels';
+import { GlassActionButton } from '../common/GlassActionButton';
 import { InlineErrorNotice } from '../common/InlineErrorNotice';
 
 export type DiagnosisTextChanged = (text: string) => void;

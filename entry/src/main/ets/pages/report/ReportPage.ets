@@ -1,5 +1,6 @@
 import { uiMaterial } from '@kit.ArkUI';
 import { AsyncStatePanel } from '../../components/common/AsyncStatePanel';
+import { GlassActionButton } from '../../components/common/GlassActionButton';
 import { InlineErrorNotice } from '../../components/common/InlineErrorNotice';
 import { ReportSectionCard } from '../../components/report/ReportSectionCard';
 import { DiagnosisReport } from '../../model/DiagnosisModels';
@@ -150,8 +151,7 @@ export struct ReportPage {
           .textOverflow({ overflow: TextOverflow.Ellipsis })
         Button(this.rawTextExpanded ? $r('app.string.report_collapse') : $r('app.string.report_expand'))
           .constraintSize({ minHeight: 44 })
-          .fontColor('#FFFFFFFF')
-          .backgroundColor('#0A59F7')
+          .fontColor(this.palette().accent)
           .onClick((): void => {
             this.rawTextExpanded = !this.rawTextExpanded;
           })
@@ -169,8 +169,6 @@ export struct ReportPage {
           .id('report_save')
           .width('100%')
           .constraintSize({ minHeight: 48 })
-          .fontColor(this.viewModel?.isSaved ? '#172033' : '#FFFFFFFF')
-          .backgroundColor(this.viewModel?.isSaved ? '#C7D7F2' : '#0A59F7')
           .enabled(this.viewModel?.saveOperation.status !== OperationStatus.LOADING &&
             !this.viewModel?.isSaved)
           .onClick((): void => {
@@ -188,8 +186,6 @@ export struct ReportPage {
             .id('report_edit_text')
             .width('100%')
             .constraintSize({ minHeight: 48 })
-            .fontColor('#FFFFFFFF')
-            .backgroundColor('#087F5B')
             .onClick((): void => {
               this.editInput();
             })
@@ -197,8 +193,7 @@ export struct ReportPage {
             .id('report_rediagnose')
             .width('100%')
             .constraintSize({ minHeight: 48 })
-            .fontColor('#FFFFFFFF')
-            .backgroundColor('#3157A4')
+            .fontColor(this.palette().accent)
             .onClick((): void => {
               this.viewModel?.rediagnose();
             })
@@ -206,8 +201,7 @@ export struct ReportPage {
         Button($r('app.string.route_back_origin'))
           .width('100%')
           .constraintSize({ minHeight: 48 })
-          .fontColor('#FFFFFFFF')
-          .backgroundColor('#0A59F7')
+          .fontColor(this.palette().secondaryText)
           .onClick((): void => {
             this.viewModel?.backToOrigin();
           })
@@ -245,13 +239,12 @@ export struct ReportPage {
               onRetry: this.routeParams.reportId === undefined ? undefined :
                 (): void => { this.loadHistoricalReport(); }
             })
-            Button(this.routeParams.origin === RouteName.HISTORY_SETTINGS ?
-              $r('app.string.route_back_history_settings') : $r('app.string.route_back_origin'))
-              .width('100%')
-              .constraintSize({ minHeight: 48 })
-              .onClick((): void => {
-                this.viewModel?.backToOrigin();
-              })
+            GlassActionButton({
+              label: this.routeParams.origin === RouteName.HISTORY_SETTINGS ?
+                $r('app.string.route_back_history_settings') : $r('app.string.route_back_origin'),
+              buttonId: 'report_error_back',
+              onAction: (): void => { this.viewModel?.backToOrigin(); }
+            })
           }
         }
         .width('100%')

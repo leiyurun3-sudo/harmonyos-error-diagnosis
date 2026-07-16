@@ -3,32 +3,24 @@ import { common } from '@kit.AbilityKit';
 import { image } from '@kit.ImageKit';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { AsyncStatePanel } from '../../components/common/AsyncStatePanel';
+import { GlassActionButton } from '../../components/common/GlassActionButton';
 import { InlineErrorNotice } from '../../components/common/InlineErrorNotice';
 import { NoticeSeverity } from '../../components/common/CommonComponentModels';
 import { DiagnosisTextEditor } from '../../components/diagnosis/DiagnosisTextEditor';
 import { DIAGNOSIS_EXAMPLES, DiagnosisExample } from '../../constants/DiagnosisExamples';
 import { SourceType } from '../../model/DiagnosisModels';
 import { OperationStatus } from '../../model/ResultModels';
-import { VisualEffectMode } from '../../model/SettingsModels';
 import { AppRouter } from '../../router/AppRouter';
 import { RouteName } from '../../router/RouteNames';
 import { DiagnosisRouteParams } from '../../router/RouteModels';
 import { createDiagnosisViewModel } from '../../service/platform/AppRuntime';
 import { VisionAiAdapter } from '../../service/ai/VisionAiAdapter';
 import { AppStateStore } from '../../store/AppStateStore';
-import { EffectiveTheme, getThemePalette, ThemePalette } from '../../theme/ThemeModels';
+import { getThemePalette, ThemePalette } from '../../theme/ThemeModels';
 import { DiagnosisViewModel } from '../../viewmodel/diagnosis/DiagnosisViewModel';
 
 @Component
 export struct DiagnosisPage {
-  private readonly lightFocusMaterial: uiMaterial.ImmersiveMaterial = new uiMaterial.ImmersiveMaterial({
-    style: uiMaterial.ImmersiveStyle.THIN,
-    materialColor: '#33FFFFFF',
-    colorInvert: false,
-    applyShadow: true,
-    interactive: true,
-    lightEffect: { color: Color.White }
-  });
   @Consume('appRouter')
   router: AppRouter;
   @Consume('appState')
